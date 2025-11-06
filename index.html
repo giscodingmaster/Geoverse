@@ -53,9 +53,9 @@
   <script type="importmap">
 {
   "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+    "react": "https://aistudiocdn.com/react@^19.2.0"
   }
 }
 </script>
@@ -258,7 +258,6 @@
               },
             ],
           },
-          // ... (All other units with YOUTUBE_VIDEO_URL)
           {
             id: 'unit2',
             title: 'Unit 2: The Nature of Spatial Data',
@@ -558,7 +557,6 @@
               },
             ],
           },
-          // ... (All other units in Arabic with YOUTUBE_VIDEO_URL)
           {
             id: 'unit2',
             title: 'الوحدة 2: طبيعة البيانات المكانية',
@@ -1017,7 +1015,10 @@
           const { glossaryData, t } = useTranslation();
 
           const glossaryMap = useMemo(() => new Map(glossaryData.map(item => [item.term.toLowerCase(), item])), [glossaryData]);
-          const termsRegex = useMemo(() => new RegExp(`\\b(${glossaryData.map(g => g.term).join('|')})\\b`, 'gi'), [glossaryData]);
+          const termsRegex = useMemo(() => {
+              const escapedTerms = glossaryData.map(g => g.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+              return new RegExp(`\\b(${escapedTerms.join('|')})\\b`, 'gi');
+          }, [glossaryData]);
 
           const parseAndHighlightText = (text) => {
               if (!text) return text;
@@ -1078,7 +1079,7 @@
                   </div>
                 )}
               </button>
-              <div className="absolute bottom-full mb-2 w-64 p-3 bg-gray-900 border border-cyan-500 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 start-1/2 -translate-x-1/2 text-start">
+              <div className="absolute bottom-full mb-2 w-64 p-3 bg-gray-900 border border-cyan-500 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 start-1/2 -translate-x-1/2 text-start pointer-events-none">
                 <h4 className="font-bold text-base text-cyan-300">{module.title}</h4>
                 {module.duration && <p className="text-xs text-gray-500 mb-2 -mt-1">{t('estimatedTime')} {module.duration}</p>}
                 <p className="text-gray-300">{parseAndHighlightText(module.description)}</p>
@@ -1203,7 +1204,7 @@
             const timer = setTimeout(calculateHeight, 50);
             window.addEventListener('resize', calculateHeight);
             return () => { clearTimeout(timer); window.removeEventListener('resize', calculateHeight); };
-          }, [currentIndex, cards]);
+          }, [currentIndex, cards, isFlipped]);
 
           const handleFlip = () => setIsFlipped(prev => !prev);
 
@@ -1266,8 +1267,8 @@
         };
         
         const Highlight = ({ text, highlight }) => {
-          if (!highlight.trim()) return <>{text}</>;
-          const regex = new RegExp(`(${highlight})`, 'gi');
+          if (!highlight || !highlight.trim()) return <>{text}</>;
+          const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
           const parts = text.split(regex);
           return (
             <>
@@ -1369,7 +1370,10 @@
           const { t, glossaryData } = useTranslation();
           
           const glossaryMap = useMemo(() => new Map(glossaryData.map(item => [item.term.toLowerCase(), item])), [glossaryData]);
-          const termsRegex = useMemo(() => new RegExp(`\\b(${glossaryData.map(g => g.term).join('|')})\\b`, 'gi'), [glossaryData]);
+          const termsRegex = useMemo(() => {
+              const escapedTerms = glossaryData.map(g => g.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+              return new RegExp(`\\b(${escapedTerms.join('|')})\\b`, 'gi');
+          }, [glossaryData]);
 
           const parseAndHighlightText = (text) => {
               if (!text) return text;
@@ -1440,7 +1444,7 @@
 
           return (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={handleCloseAndSave}>
-              <div className="bg-gray-800 text-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-700 flex flex-col text-start" onClick={e => e.stopPropagation()}>
+              <div className="bg-gray-800 text-white rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-700 flex flex-col text-start" onClick={e => e.stopPropagation()}>
                 <header className="p-6 flex items-start justify-between border-b border-gray-700">
                   <div className="flex items-center gap-4">
                     <div className="text-cyan-400">{getIcon(module.type)}</div>
@@ -1564,7 +1568,7 @@
             if (!searchTerm.trim()) return courseData;
             const lowercasedFilter = searchTerm.toLowerCase();
             return courseData
-              .map(track => ({ ...track, modules: track.modules.filter(module => module.title.toLowerCase().includes(lowercasedFilter) || module.description.toLowerCase().includes(lowercasedFilter)) }))
+              .map(track => ({ ...track, modules: track.modules.filter(module => module.title.toLowerCase().includes(lowercasedFilter) || (module.description && module.description.toLowerCase().includes(lowercasedFilter))) }))
               .filter(track => track.modules.length > 0);
           }, [searchTerm, courseData]);
 
