@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GIS Fundamentals Course</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #111827;
+        color: #f9fafb;
+      }
+      .font-serif {
+        font-family: 'Lora', serif;
+      }
+      @keyframes checkmark-pop {
+        0% { transform: scale(0); opacity: 0; }
+        70% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .animate-checkmark {
+        animation: checkmark-pop 0.5s ease-out;
+      }
+      .flashcard-container {
+        perspective: 1000px;
+      }
+      .flashcard {
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+      }
+      .flashcard.is-flipped {
+        transform: rotateY(180deg);
+      }
+      .flashcard-face {
+        -webkit-backface-visibility: hidden; /* Safari */
+        backface-visibility: hidden;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+      .flashcard-back {
+        transform: rotateY(180deg);
+      }
+    </style>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" data-presets="react">
+      (() => {
+        const { useState, useEffect, useMemo, createContext, useContext, useRef, Fragment } = React;
+
+        // --- DATA AND TRANSLATIONS ---
+
+        const enTranslations = {
+          gisFundamentals: 'GIS Fundamentals',
+          landingPageDescription: 'An interactive journey into the world of Geographic Information Systems. From core concepts to hands-on projects, start your spatial thinking adventure here.',
+          startLearning: 'Start Learning',
+          courseDashboard: 'Course Dashboard',
+          courseProgressDescription: 'Your progress for GIS Fundamentals',
+          glossary: 'Glossary',
+          searchPlaceholder: 'Search modules by title or description...',
+          noModulesFound: 'No Modules Found',
+          adjustSearch: 'Try adjusting your search term.',
+          estimatedTime: 'Est. time:',
+          completed: 'Completed',
+          close: 'Close',
+          backToDashboard: 'Back to Dashboard',
+          markAsComplete: 'Mark as Complete',
+          nextModule: 'Next Module',
+          submitAnswers: 'Submit Answers',
+          yourScore: 'Your Score',
+          startLabOnline: 'Start Lab (Online)',
+          onlineDescription: 'Web-based tutorial. No installation required.',
+          startLabPro: 'Start Lab (Pro)',
+          proDescription: 'Desktop tutorial. Requires ArcGIS Pro software.',
+          flipCard: 'Click the card to flip it.',
+          prev: 'Prev',
+          next: 'Next',
+          glossaryTitle: 'Glossary of GIS Terms',
+          glossaryDescription: 'Search for terms and definitions.',
+          glossarySearchPlaceholder: 'Search terms...',
+          glossaryNoTerms: 'No terms found matching your search.',
+        };
+
+        const arTranslations = {
+            gisFundamentals: 'أساسيات نظم المعلومات الجغرافية',
+            landingPageDescription: 'رحلة تفاعلية إلى عالم نظم المعلومات الجغرافية. من المفاهيم الأساسية إلى المشاريع العملية، ابدأ مغامرتك في التفكير المكاني هنا.',
+            startLearning: 'ابدأ التعلم',
+            courseDashboard: 'لوحة تحكم الدورة',
+            courseProgressDescription: 'تقدمك في أساسيات نظم المعلومات الجغرافية',
+            glossary: 'مسرد المصطلحات',
+            searchPlaceholder: 'ابحث عن الوحدات حسب العنوان أو الوصف...',
+            noModulesFound: 'لم يتم العثور على وحدات',
+            adjustSearch: 'حاول تعديل مصطلح البحث الخاص بك.',
+            estimatedTime: 'الوقت المقدر:',
+            completed: 'مكتمل',
+            close: 'إغلاق',
+            backToDashboard: 'العودة إلى لوحة التحكم',
+            markAsComplete: 'وضع علامة كمكتمل',
+            nextModule: 'الوحدة التالية',
+            submitAnswers: 'إرسال الإجابات',
+            yourScore: 'نتيجتك',
+            startLabOnline: 'ابدأ المختبر (أونلاين)',
+            onlineDescription: 'درس تعليمي على الويب. لا يتطلب تثبيت أي برامج.',
+            startLabPro: 'ابدأ المختبر (Pro)',
+            proDescription: 'درس تعليمي لسطح المكتب. يتطلب برنامج ArcGIS Pro.',
+            flipCard: 'انقر على البطاقة لقلبها.',
+            prev: 'السابق',
+            next: 'التالي',
+            glossaryTitle: 'مسرد مصطلحات نظم المعلومات الجغرافية',
+            glossaryDescription: 'ابحث عن المصطلحات والتعاريف.',
+            glossarySearchPlaceholder: 'ابحث عن المصطلحات...',
+            glossaryNoTerms: 'لم يتم العثور على مصطلحات تطابق بحثك.',
+        };
+
+        const enGlossaryData = [
+          { term: 'GIS', definition: 'A Geographic Information System is a system designed to capture, store, manipulate, analyze, manage, and present all types of geographical data.'},
+          { term: 'Vector', definition: 'A data model that uses points, lines, and polygons to represent discrete geographic features with well-defined boundaries.'},
+          { term: 'Raster', definition: 'A data model that uses a grid of cells (or pixels) to represent continuous phenomena, such as elevation or temperature. Each cell has a value.'},
+          { term: 'Attribute Table', definition: 'A table containing rows and columns of non-spatial information associated with a geographic feature layer. Each row corresponds to a feature, and each column is an attribute.'},
+          { term: 'Topology', definition: 'The spatial relationships between adjacent or connected vector features (e.g., two polygons share a boundary). It is essential for some types of spatial analysis.'},
+          { term: 'Shapefile', definition: 'A popular geospatial vector data format for GIS software. It is a collection of files that store the geometric location and attribute information of geographic features.'},
+          { term: 'Geodatabase', definition: 'A collection of geographic datasets of various types held in a common file system folder, a Microsoft Access database, or a multi-user relational DBMS.'},
+          { term: 'Layer', definition: 'The visual representation of a geographic dataset in a digital map environment. A map is typically composed of several layers stacked on top of each other.'},
+          { term: 'Datum', definition: 'A reference system that specifies the size and shape of the Earth, and the origin and orientation of the coordinate systems used to map the Earth.'},
+          { term: 'Coordinate System', definition: 'A reference framework used to define the locations of points in space. It provides a way to measure distances and directions between locations.'},
+          { term: 'Geographic Coordinate System (GCS)', definition: 'A coordinate system that uses a three-dimensional spherical surface to define locations on the Earth. It uses angular units, like latitude and longitude.'},
+          { term: 'Projected Coordinate System (PCS)', definition: 'A coordinate system based on a map projection, which is a flat, two-dimensional representation of the Earth. It uses linear units, like meters or feet.'},
+          { term: 'Map Projection', definition: 'A method for representing the curved surface of the Earth on a flat surface, like a map. All projections introduce some distortion of shape, area, distance, or direction.'},
+          { term: 'GPS', definition: 'Global Positioning System. A satellite-based system that provides precise location information (latitude, longitude, altitude) anywhere on or near the Earth.'},
+          { term: 'Heads-up Digitizing', definition: 'The process of creating new vector features by tracing them on-screen from a basemap, such as a satellite image or aerial photograph.'},
+          { term: 'Select by Attributes', definition: 'A GIS operation that selects features in a layer using a query based on their attribute values (e.g., finding all cities with a population greater than 1 million).'},
+          { term: 'Select by Location', definition: 'A GIS operation that selects features based on their spatial relationship to other features (e.g., finding all schools that are inside a specific county).'},
+          { term: 'Geoprocessing', definition: 'A GIS operation used to manipulate spatial data. A typical geoprocessing operation takes an input dataset, performs an operation, and returns the result as an output dataset.'},
+          { term: 'Buffering', definition: 'A geoprocessing operation that creates a polygon at a specified distance around an input feature. Useful for proximity analysis.'},
+          { term: 'Clip', definition: 'A geoprocessing operation that extracts input features that overlay the clip features. It acts like a cookie cutter.'},
+          { term: 'Dissolve', definition: 'A geoprocessing operation that aggregates features based on a specified attribute, effectively merging adjacent polygons with the same attribute value.'},
+          { term: 'Cartography', definition: 'The art and science of creating maps. It involves everything from data visualization and symbol design to layout and production.'},
+          { term: 'Symbology', definition: 'The use of graphical symbols, colors, and patterns to represent geographic features and their attributes on a map.'},
+          { term: 'Choropleth Map', definition: 'A thematic map in which areas are shaded or patterned in proportion to the measurement of the statistical variable being displayed on the map, such as population density.'},
+          { term: 'Classification', definition: 'The process of grouping features with similar attribute values into classes for symbolization on a map, using methods like Natural Breaks or Equal Interval.'},
+          { term: 'Legend', definition: 'A key map element that explains the meaning of the symbols, colors, and patterns used on the map.'},
+          { term: 'Scale Bar', definition: 'A map element that shows the relationship between distance on the map and the corresponding distance on the ground.'},
+          { term: 'Attribute Data', definition: 'Non-spatial information associated with a geographic feature in a GIS, usually stored in a table and linked to the feature by a unique identifier.'},
+          { term: 'Join', definition: 'An operation that combines data from two tables based on a common field or attribute, often used to append attribute data to the geographic features in a layer.'},
+          { term: 'Metadata', definition: 'Data that provides information about other data. In GIS, metadata describes the content, quality, condition, origin, and other characteristics of a dataset.'},
+        ];
+        
+        const arGlossaryData = [
+          { term: 'نظم المعلومات الجغرافية (GIS)', definition: 'نظام معلومات جغرافية هو نظام مصمم لالتقاط وتخزين ومعالجة وتحليل وإدارة وتقديم جميع أنواع البيانات الجغرافية.'},
+          { term: 'المتجه (Vector)', definition: 'نموذج بيانات يستخدم النقاط والخطوط والمضلعات لتمثيل المعالم الجغرافية المنفصلة ذات الحدود المحددة جيدًا.'},
+          { term: 'النقطي (Raster)', definition: 'نموذج بيانات يستخدم شبكة من الخلايا (أو البكسلات) لتمثيل الظواهر المستمرة، مثل الارتفاع أو درجة الحرارة. كل خلية لها قيمة.'},
+          { term: 'جدول السمات (Attribute Table)', definition: 'جدول يحتوي على صفوف وأعمدة من المعلومات غير المكانية المرتبطة بطبقة معالم جغرافية. كل صف يتوافق مع معلم، وكل عمود هو سمة.'},
+          { term: 'الطوبولوجيا (Topology)', definition: 'العلاقات المكانية بين المعالم المتجهية المتجاورة أو المتصلة (على سبيل المثال، مضلعان يشتركان في حدود). وهي ضرورية لبعض أنواع التحليل المكاني.'},
+          { term: 'ملف شكلي (Shapefile)', definition: 'تنسيق بيانات متجهية جغرافية مكانية شائع لبرامج نظم المعلومات الجغرافية. وهو مجموعة من الملفات التي تخزن الموقع الهندسي ومعلومات السمات للمعالم الجغرافية.'},
+          { term: 'قاعدة البيانات الجغرافية (Geodatabase)', definition: 'مجموعة من مجموعات البيانات الجغرافية من أنواع مختلفة محفوظة في مجلد نظام ملفات مشترك، أو قاعدة بيانات Microsoft Access، أو نظام إدارة قواعد بيانات علائقية متعدد المستخدمين.'},
+          { term: 'الطبقة (Layer)', definition: 'التمثيل البصري لمجموعة بيانات جغرافية في بيئة خريطة رقمية. تتكون الخريطة عادةً من عدة طبقات مكدسة فوق بعضها البعض.'},
+          { term: 'المسند (Datum)', definition: 'نظام مرجعي يحدد حجم وشكل الأرض، وأصل واتجاه أنظمة الإحداثيات المستخدمة لرسم خريطة الأرض.'},
+          { term: 'نظام الإحداثيات (Coordinate System)', definition: 'إطار مرجعي يستخدم لتحديد مواقع النقاط في الفضاء. يوفر طريقة لقياس المسافات والاتجاهات بين المواقع.'},
+          { term: 'نظام الإحداثيات الجغرافي (GCS)', definition: 'نظام إحداثيات يستخدم سطحًا كرويًا ثلاثي الأبعاد لتحديد المواقع على الأرض. يستخدم وحدات زاوية، مثل خطوط الطول والعرض.'},
+          { term: 'نظام الإحداثيات المسقط (PCS)', definition: 'نظام إحداثيات يعتمد على إسقاط الخريطة، وهو تمثيل مسطح ثنائي الأبعاد للأرض. يستخدم وحدات خطية، مثل الأمتار أو الأقدام.'},
+          { term: 'إسقاط الخريطة (Map Projection)', definition: 'طريقة لتمثيل السطح المنحني للأرض على سطح مستو، مثل الخريطة. جميع الإسقاطات تدخل بعض التشوه في الشكل أو المساحة أو المسافة أو الاتجاه.'},
+          { term: 'GPS', definition: 'نظام تحديد المواقع العالمي. نظام قائم على الأقمار الصناعية يوفر معلومات دقيقة عن الموقع (خط العرض، خط الطول، الارتفاع) في أي مكان على الأرض أو بالقرب منها.'},
+          { term: 'الترقيم على الشاشة (Heads-up Digitizing)', definition: 'عملية إنشاء معالم متجهية جديدة عن طريق تتبعها على الشاشة من خريطة أساس، مثل صورة قمر صناعي أو صورة جوية.'},
+          { term: 'التحديد حسب السمات (Select by Attributes)', definition: 'عملية في نظم المعلومات الجغرافية تحدد المعالم في طبقة باستخدام استعلام يعتمد على قيم سماتها (على سبيل المثال، العثور على جميع المدن التي يزيد عدد سكانها عن مليون نسمة).'},
+          { term: 'التحديد حسب الموقع (Select by Location)', definition: 'عملية في نظم المعلومات الجغرافية تحدد المعالم بناءً على علاقتها المكانية بالمعالم الأخرى (على سبيل المثال، العثور على جميع المدارس الموجودة داخل مقاطعة معينة).'},
+          { term: 'المعالجة الجغرافية (Geoprocessing)', definition: 'عملية في نظم المعلومات الجغرافية تستخدم لمعالجة البيانات المكانية. تأخذ عملية المعالجة الجغرافية النموذجية مجموعة بيانات مدخلة، وتنفذ عملية، وتعيد النتيجة كمجموعة بيانات مخرجة.'},
+          { term: 'النطاق الحرمي (Buffering)', definition: 'عملية معالجة جغرافية تنشئ مضلعًا على مسافة محددة حول معلم مدخل. مفيدة لتحليل القرب.'},
+          { term: 'القص (Clip)', definition: 'عملية معالجة جغرافية تستخرج المعالم المدخلة التي تتراكب مع معالم القص. تعمل مثل قاطعة البسكويت.'},
+          { term: 'الإذابة (Dissolve)', definition: 'عملية معالجة جغرافية تجمع المعالم بناءً على سمة محددة، وتدمج بشكل فعال المضلعات المجاورة التي لها نفس قيمة السمة.'},
+          { term: 'علم الخرائط (Cartography)', definition: 'فن وعلم إنشاء الخرائط. يشمل كل شيء من تصور البيانات وتصميم الرموز إلى التخطيط والإنتاج.'},
+          { term: 'الترميز (Symbology)', definition: 'استخدام الرموز الرسومية والألوان والأنماط لتمثيل المعالم الجغرافية وسماتها على الخريطة.'},
+          { term: 'خريطة كوربليث (Choropleth Map)', definition: 'خريطة موضوعية يتم فيها تظليل المناطق أو وضع نقوش عليها بما يتناسب مع قياس المتغير الإحصائي المعروض على الخريطة، مثل الكثافة السكانية.'},
+          { term: 'التصنيف (Classification)', definition: 'عملية تجميع المعالم ذات قيم السمات المتشابهة في فئات للترميز على الخريطة، باستخدام طرق مثل الفواصل الطبيعية أو الفاصل المتساوي.'},
+          { term: 'مفتاح الخريطة (Legend)', definition: 'عنصر خريطة رئيسي يشرح معنى الرموز والألوان والأنماط المستخدمة على الخريطة.'},
+          { term: 'مقياس الرسم (Scale Bar)', definition: 'عنصر خريطة يوضح العلاقة بين المسافة على الخريطة والمسافة المقابلة على الأرض.'},
+          { term: 'بيانات السمات (Attribute Data)', definition: 'معلومات غير مكانية مرتبطة بمعلم جغرافي في نظام المعلومات الجغرافية، وعادة ما يتم تخزينها في جدول وربطها بالمعلم بواسطة معرف فريد.'},
+          { term: 'الربط (Join)', definition: 'عملية تجمع بين البيانات من جدولين بناءً على حقل أو سمة مشتركة، وغالبًا ما تستخدم لإلحاق بيانات السمات بالمعالم الجغرافية في طبقة.'},
+          { term: 'البيانات الوصفية (Metadata)', definition: 'بيانات توفر معلومات حول بيانات أخرى. في نظم المعلومات الجغرافية، تصف البيانات الوصفية محتوى وجودة وحالة وأصل وخصائص أخرى لمجموعة البيانات.'},
+        ];
+        
+        const YOUTUBE_VIDEO_URL = 'https://www.youtube.com/embed/1weeI3Ey9wM';
+
+        const enCourseData = [
+          {
+            id: 'unit1',
+            title: 'Unit 1: The Fundamentals',
+            description: 'Start your journey by understanding what GIS is, why it matters, and how to think spatially.',
+            modules: [
+              { id: 'u1l1', title: 'Welcome to GIS', type: 'lecture', description: 'An introduction to the course, its goals, and the exciting world of Geographic Information Systems.', duration: '2 min' },
+              { 
+                id: 'u1r1', 
+                title: 'Reading: Thinking Spatially', 
+                type: 'reading-flashcards', 
+                description: 'Learn to see the world through a geographic lens and understand the importance of location with these interactive reading cards.', 
+                duration: '15 min',
+                readingCards: [
+                  { frontContent: "What is Spatial Thinking? It's more than just knowing where things are. It's the ability to see, understand, and analyze the patterns and relationships between places and phenomena. It involves thinking about space, distance, direction, and how features are distributed across a landscape.", backContent: "Key Idea: Spatial thinking is about understanding the 'why of where'. It's an analytical skill." },
+                  { frontContent: "An important part of spatial thinking is understanding scale—the ratio between distance on a map and the corresponding distance on the ground. A large-scale map shows a small area in great detail (like a neighborhood), while a small-scale map shows a large area with less detail (like a world map).", backContent: "Key Term: Scale - The level of detail and the amount of area covered on a map. Large scale = small area, high detail. Small scale = large area, low detail." },
+                  { frontContent: "Another key concept is the spatial pattern of features. Are they clustered together, dispersed randomly, or arranged in a regular pattern? Identifying these patterns is often the first step in understanding the underlying processes that create them.", backContent: "Check Your Understanding: What kind of spatial pattern would you expect to see for Starbucks locations in a major city? What about fire hydrants?" },
+                  { frontContent: "In GIS, we use both absolute location (a precise coordinate) and relative location (a place's position in relation to others). Absolute location gives us the data to put on a map, while understanding relative location helps us perform meaningful analysis, like finding all hospitals within 5 miles of a major highway.", backContent: "Synthesis: GIS combines precise absolute locations with the analytical power of understanding relative locations, patterns, and scale to solve complex problems." }
+                ]
+              },
+              { id: 'u1l2', title: 'Components of a GIS', type: 'lecture', description: 'Discover the five key components of a GIS: Hardware, Software, Data, People, and Methods.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 min' },
+              { 
+                id: 'u1i1', 
+                title: 'Flashcards: GIS in the Real World', 
+                type: 'flashcards', 
+                description: 'Review key terms about real-world GIS applications, from urban planning and disaster response to marketing and conservation.', 
+                duration: '5 min',
+                flashcards: [
+                    { term: 'GIS', definition: 'A system designed to capture, store, manipulate, analyze, manage, and present all types of geographical data.' },
+                    { term: 'Spatial Thinking', definition: 'The ability to visualize, analyze, and interpret location-based information to understand relationships and patterns.'},
+                    { term: 'Hardware', definition: 'The physical computers and devices used for GIS, from desktops to servers and mobile devices.' },
+                    { term: 'Software', definition: 'The computer programs that provide the tools to work with geographic information.' },
+                    { term: 'Data', definition: 'The geographic and tabular information used in a GIS. It is the core of any GIS application.' },
+                    { term: 'People', definition: 'The users who build, maintain, and apply the GIS for specific problems.' },
+                    { term: 'Methods', definition: 'The plans, rules, and procedures that guide how a GIS is used within an organization.' },
+                ]
+              },
+              { 
+                id: 'u1p1', 
+                title: 'Lab: Exploring Online Maps', 
+                type: 'lab', 
+                description: 'Get hands-on with GIS. Choose the online version to learn map navigation and layer basics in ArcGIS Online, or the Pro version for a tour of the desktop software interface.', 
+                duration: '20 min',
+                externalUrls: {
+                    online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                    pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              },
+              {
+                id: 'u1q1',
+                title: 'Quiz: Core Concepts',
+                type: 'quiz',
+                description: 'Test your grasp of the fundamental concepts and components of GIS.',
+                duration: '5 min',
+                questions: [
+                  { text: 'What are the five main components of a GIS?', options: ['Points, Lines, Polygons, Rasters, Tables', 'Hardware, Software, Data, People, Methods', 'Maps, Globes, Atlases, Charts, GPS', 'Satellites, Drones, Servers, Desktops, Phones'], correctAnswer: 1, },
+                  { text: 'Thinking spatially means understanding the importance of...', options: ['Software programming', 'The absolute and relative location of features', 'Database administration', 'Graphic design'], correctAnswer: 1, },
+                ],
+              },
+            ],
+          },
+          // ... (All other units with YOUTUBE_VIDEO_URL)
+          {
+            id: 'unit2',
+            title: 'Unit 2: The Nature of Spatial Data',
+            description: 'Learn how we represent the real world digitally using the two fundamental GIS data models: vector and raster.',
+            modules: [
+              { id: 'u2l1', title: 'The Vector Data Model', type: 'lecture', description: 'A deep dive into points, lines, and polygons, and how they represent discrete features in the world.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 min' },
+              { 
+                id: 'u2r1', 
+                title: 'Reading: Understanding Attributes', 
+                type: 'reading-flashcards', 
+                description: 'Explore how non-spatial data is stored in attribute tables and linked to vector features.', 
+                duration: '15 min',
+                readingCards: [
+                  { frontContent: "Every feature on a GIS map—be it a point, line, or polygon—has information that describes it. This descriptive information is called 'attributes'. For example, a point representing a city might have attributes like its name, population, and mayor.", backContent: "Key Idea: Attributes are the 'what' and 'how much' that describe the 'where' of a geographic feature." },
+                  { frontContent: "This information is stored in a structured format called an Attribute Table. Think of it like a spreadsheet that is directly linked to the shapes on the map. Each row in the table corresponds to one feature, and each column, also known as a 'field', represents a specific attribute.", backContent: "Key Term: Attribute Table - A database or tabular file containing information (in fields) about a set of geographic features, where each row represents one feature." },
+                  { frontContent: "Attribute fields have specific data types, such as text (for names), integer (for whole numbers like population), or date. Choosing the correct data type is important for storage efficiency and enabling certain types of queries and calculations.", backContent: "Check Your Understanding: What would be the best data types to store the following attributes: a river's name, its length in kilometers, and the date it was last surveyed?" },
+                  { frontContent: "The link between the map feature and its row in the attribute table is crucial, often managed by a unique ID field. If you select a feature on the map, its corresponding row in the table is highlighted. If you select a row in the table, the corresponding feature on the map lights up. This is the fundamental connection in a GIS.", backContent: "Synthesis: This two-way link between geometry (the shape) and attributes (the data) is what gives GIS its analytical power." }
+                ]
+              },
+              { id: 'u2p1', title: 'Lab: Exploring Vector Data', type: 'lab', description: 'Use GIS software to inspect a dataset, view its contents, and get acquainted with the ArcGIS interface.', duration: '25 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/' } },
+              { id: 'u2l2', title: 'The Raster Data Model', type: 'lecture', description: 'Learn how continuous phenomena like elevation and temperature are represented using a grid of cells.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 min' },
+              { 
+                id: 'u2r2', 
+                title: 'Reading: Pixels and Values', 
+                type: 'reading-flashcards', 
+                description: 'Understand how each cell in a raster grid stores a value and what those values can represent.', 
+                duration: '10 min',
+                readingCards: [
+                  { frontContent: "Unlike vector data which has distinct shapes, raster data is a continuous grid of cells, much like the pixels in a digital photograph. Each individual cell in the grid has a single value assigned to it.", backContent: "Key Idea: Raster data represents the world as a surface divided into a regular grid of cells." },
+                  { frontContent: "What do these values mean? They can represent many things! In a Digital Elevation Model (DEM), each cell's value is its elevation above sea level. In a satellite image, the value could represent the brightness of light reflected from the Earth's surface in a particular color band.", backContent: "Check Your Understanding: What could the cell values in a raster represent if you were mapping average annual rainfall? What about land surface temperature?" },
+                  { frontContent: "The size of the cells in the grid is known as the raster's 'resolution'. A raster with a 1-meter resolution means each cell represents a 1x1 meter square on the ground. A smaller cell size means higher resolution and more detail, but also a much larger file size.", backContent: "Key Term: Resolution - The size of the grid cells in a raster dataset, which determines the level of detail." }
+                ]
+              },
+              { id: 'u2p2', title: 'Lab: Exploring Raster Data', type: 'lab', description: 'See the raster data model in action. The online lab explores the Living Atlas, while the Pro path guides you through using raster data and imagery.', duration: '25 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-living-atlas-of-the-world/', pro: 'https://learn.arcgis.com/en/paths/using-raster-data-and-imagery-in-arcgis-pro/' } },
+              { 
+                id: 'u2i1', 
+                title: 'Flashcards: Vector vs. Raster', 
+                type: 'flashcards', 
+                description: 'Review key terms to compare how real-world features are modeled using both vector and raster data.', 
+                duration: '5 min',
+                flashcards: [
+                    { term: 'Vector Data', definition: 'A data model that uses points, lines, and polygons to represent discrete geographic features with well-defined boundaries.' },
+                    { term: 'Raster Data', definition: 'A data model that uses a grid of cells (or pixels) to represent continuous phenomena. Each cell has a value.' },
+                    { term: 'Point', definition: 'A single (x,y) coordinate pair that represents a geographic feature too small to be displayed as a line or area, such as a well or a telephone pole.' },
+                    { term: 'Line (or Arc)', definition: 'A feature made of a sequence of connected points used to represent linear features such as roads or rivers.' },
+                    { term: 'Polygon', definition: 'A closed, multi-sided feature defined by a set of connected lines, representing an area such as a lake, a building, or a state.' },
+                    { term: 'Attribute Table', definition: 'A table of non-spatial information associated with geographic features. Each row corresponds to a feature.' },
+                ]
+              },
+              {
+                id: 'u2q1',
+                title: 'Quiz: Data Models',
+                type: 'quiz',
+                description: 'Check your understanding of the differences, strengths, and weaknesses of vector and raster data.',
+                duration: '7 min',
+                questions: [
+                  { text: 'Which data model is best suited for representing discrete features like roads or buildings?', options: ['Raster', 'Tabular', 'Vector', 'Topological'], correctAnswer: 2, },
+                  { text: 'A satellite image is an example of what kind of data?', options: ['Vector', 'Raster', 'Attribute', 'Network'], correctAnswer: 1, },
+                  { text: 'In a vector data model, information about a feature (like its name or size) is stored in a...', options: ['Pixel', 'Text file', 'Attribute Table', 'Header file'], correctAnswer: 2, },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'unit3',
+            title: 'Unit 3: Where in the World?',
+            description: "Grasp the critical concepts of coordinate systems, datums, and map projections that allow us to accurately locate data on the Earth's surface.",
+            modules: [
+              { id: 'u3l1', title: 'The Shape of the Earth', type: 'lecture', description: 'Learn about Geoids, Ellipsoids, and Datums, the foundational models for defining location on Earth.', videoUrl: YOUTUBE_VIDEO_URL, duration: '10 min' },
+              { id: 'u3l2', title: 'Geographic Coordinate Systems', type: 'lecture', description: 'Understand latitude and longitude and how this angular system pinpoints any location on the globe.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 min' },
+              { 
+                id: 'u3r1', 
+                title: 'Reading: Projections Explained', 
+                type: 'reading-flashcards', 
+                description: 'Dive into why we need map projections and the unavoidable distortions they create (shape, area, distance, direction).', 
+                duration: '15 min',
+                readingCards: [
+                  { frontContent: "The fundamental challenge in map-making is representing our three-dimensional, spherical Earth on a two-dimensional flat surface. This process is called map projection.", backContent: "Key Idea: A map projection is a systematic transformation of the latitudes and longitudes of locations from the surface of a sphere into locations on a plane." },
+                  { frontContent: "Projections can be visualized by imagining a light source inside a translucent globe casting shadows of the graticule onto a surface. The shape of this surface—a cylinder, a cone, or a plane—determines the projection 'family' and dictates its distortion properties.", backContent: "Main Families: Conic, Cylindrical, and Planar (or Azimuthal) are the three main developable surfaces used for map projections." },
+                  { frontContent: "There are four main properties that can be distorted: Shape, Area, Distance, and Direction. A projection that preserves shape is called 'conformal' but distorts area. A projection that preserves area is 'equal-area' but distorts shape. No flat map can preserve all properties.", backContent: "Key Term: Distortion - The unavoidable alteration of spatial properties when projecting a 3D surface onto a 2D map." },
+                  { frontContent: "The choice of projection is critical. An equal-area projection is essential for a thematic map showing population density, while a conformal projection is used for navigation charts where angles are important. An equidistant projection might be chosen if measuring distances from a central point is the main goal.", backContent: "Synthesis: The 'best' projection depends entirely on the purpose of the map, the location and extent of the area being mapped, and the analysis being performed." }
+                ]
+              },
+              { id: 'u3l3', title: 'Projected Coordinate Systems', type: 'lecture', description: 'Discover how we "unroll" the 3D Earth onto a 2D flat map using common projections like UTM and State Plane.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 min' },
+              { 
+                id: 'u3i1', 
+                title: 'Flashcards: Projection Concepts', 
+                type: 'flashcards', 
+                description: 'Review key terms to understand how different projections drastically change the appearance of continents.', 
+                duration: '5 min',
+                flashcards: [
+                    { term: 'Map Projection', definition: 'A method for representing the curved surface of the Earth on a flat surface. All projections introduce distortion.' },
+                    { term: 'Distortion', definition: 'The unavoidable alteration in shape, area, distance, or direction when representing a 3D surface on a 2D map.' },
+                    { term: 'Datum', definition: 'A reference system specifying the size and shape of the Earth, and the origin of the coordinate systems used to map it.' },
+                    { term: 'Geographic Coordinate System (GCS)', definition: 'A coordinate system that uses a three-dimensional spherical surface (latitude/longitude) to define locations.' },
+                    { term: 'Projected Coordinate System (PCS)', definition: 'A coordinate system based on a flat, two-dimensional map projection, using linear units like meters or feet.' },
+                ]
+              },
+              { id: 'u3p1', title: 'Lab: Working with Projections', type: 'lab', description: 'Explore how projections change map appearance. The online lab teaches how to choose the right projection, while the Pro lab focuses on working with coordinate systems on the desktop.', duration: '30 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/choose-the-right-projection/', pro: 'https://learn.arcgis.com/en/projects/choose-the-right-projection/' } },
+              {
+                id: 'u3q1',
+                title: 'Quiz: Coordinate Systems',
+                type: 'quiz',
+                description: 'Test your knowledge on the difference between GCS and PCS and the role of projections.',
+                duration: '7 min',
+                questions: [
+                  { text: 'What is the primary purpose of a map projection?', options: ['To make maps look artistic', 'To represent the 3D surface of the Earth on a 2D map', 'To store data efficiently', 'To measure elevation'], correctAnswer: 1, },
+                  { text: 'Latitude and Longitude are part of which type of coordinate system?', options: ['Projected Coordinate System', 'Geographic Coordinate System', 'Universal Transverse Mercator', 'State Plane'], correctAnswer: 1, },
+                   { text: 'Every map projection introduces some form of...', options: ['Distortion', 'Color', 'Attribute data', 'Topology'], correctAnswer: 0, },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'unit4',
+            title: 'Unit 4: Acquiring Spatial Data',
+            description: 'Learn where GIS data comes from, from collecting it yourself to find reliable existing datasets.',
+            modules: [
+                { id: 'u4l1', title: 'Data Sources', type: 'lecture', description: 'An overview of the primary and secondary sources of spatial data, including satellites, aerial photography, and GPS.', videoUrl: YOUTUBE_VIDEO_URL, duration: '10 min' },
+                { 
+                    id: 'u4r1', 
+                    title: 'Reading: Data Quality & Metadata', 
+                    type: 'reading-flashcards', 
+                    description: "Learn why understanding a dataset's quality, accuracy, and history through its metadata is critically important.", 
+                    duration: '15 min',
+                    readingCards: [
+                      { frontContent: "Not all data is created equal. Before you use any dataset in a GIS analysis, you must ask: 'Can I trust this data?' Data quality refers to the fitness of a dataset for a specific purpose. This goes beyond simple accuracy.", backContent: "Key Idea: Poor quality input data will always lead to poor quality analysis results. This is often called 'garbage in, garbage out'." },
+                      { frontContent: "Key components of data quality include: Positional Accuracy (how close features are to their real-world locations), Attribute Accuracy (how correct the descriptive data is), Logical Consistency (ensuring data follows logical rules, e.g., no overlapping building footprints), and Completeness (are all expected features present?).", backContent: "Check Your Understanding: If a rivers map is missing several major tributaries, which component of data quality is lacking?" },
+                      { frontContent: "How do we assess data quality? We look at its 'metadata'. Metadata is 'data about data'. It's a file or document that describes the dataset's history: who created it, when, why, the data sources used, its coordinate system, and its known limitations.", backContent: "Key Term: Metadata - A descriptive file containing information about a dataset, crucial for understanding its origin, quality, and proper use." },
+                      { frontContent: "Imagine finding a dataset called 'roads.shp'. Without metadata, you don't know if it includes all roads or just highways, its positional accuracy, or when it was last updated. The data is unusable for any serious analysis like emergency response routing.", backContent: "Synthesis: Metadata provides the context that turns raw data into reliable information, allowing you to assess its quality and fitness for your purpose." }
+                    ]
+                },
+                { id: 'u4l2', title: 'Heads-Up Digitizing', type: 'lecture', description: 'Understand the process of creating new vector data by tracing features from a base map or image.', videoUrl: YOUTUBE_VIDEO_URL, duration: '8 min' },
+                { id: 'u4p1', title: 'Lab: Digitizing Features', type: 'lab', description: 'Gain hands-on experience by creating new vector features. The online lab uses the Community Maps Editor, while the Pro lab teaches you to copy features.', duration: '30 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/digitize-your-neighborhood-with-arcgis-community-maps-editor/', pro: 'https://learn.arcgis.com/en/projects/copy-features-between-layers/' } },
+                { 
+                    id: 'u4r2', 
+                    title: 'Reading: Open Data Portals', 
+                    type: 'reading-flashcards', 
+                    description: 'A guide to finding free, authoritative GIS data from government and scientific sources.', 
+                    duration: '10 min',
+                    readingCards: [
+                        { frontContent: "Fortunately, you don't always have to create your own data. An enormous amount of high-quality GIS data is available for free from 'Open Data Portals'. These are websites, usually run by government agencies, that provide public access to their geospatial data.", backContent: "Key Idea: Open data portals are a primary resource for finding reliable, pre-existing GIS data." },
+                        { frontContent: "Examples include local city or county GIS portals, state-level geographic information clearinghouses, and national-level sources like data.gov in the United States. These sources provide 'authoritative' data, meaning it was created and is maintained by an official organization.", backContent: "Check Your Understanding: Why is it often better to use data from an official government portal than from a random website?" },
+                        { frontContent: "When using an open data portal, you can typically search for data by keyword (e.g., 'parcels', 'streets', 'zoning') or browse by category. The data is usually available in common formats like shapefiles or geodatabases and should always be accompanied by metadata.", backContent: "Synthesis: Leveraging open data portals saves immense time and resources, allowing GIS professionals to focus on analysis rather than data creation." }
+                    ]
+                },
+                { id: 'u4p2', title: 'Lab: Finding and Using Open Data', type: 'lab', description: 'Learn how to find and use data. The online lab guides you through adding data from Living Atlas, while the Pro lab focuses on using Living Atlas on the desktop.', duration: '25 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/add-data-to-a-web-map-from-arcgis-living-atlas/', pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-living-atlas-of-the-world/' } },
+                {
+                    id: 'u4q1',
+                    title: 'Quiz: Data Acquisition',
+                    type: 'quiz',
+                    description: 'Assess your knowledge of data sources and creation methods.',
+                    duration: '5 min',
+                    questions: [
+                      { text: 'Creating new line features by tracing rivers from a satellite image is called:', options: ['Buffering', 'Geoprocessing', 'Heads-up Digitizing', 'Projecting'], correctAnswer: 2, },
+                      { text: 'Data about data, which describes the origin, quality, and characteristics of a dataset, is called:', options: ['Attribute Data', 'Metadata', 'Raster Data', 'Vector Data'], correctAnswer: 1, },
+                    ],
+                  },
+            ]
+          },
+          {
+            id: 'unit5',
+            title: 'Unit 5: The GIS Toolkit',
+            description: 'Begin to unlock the power of GIS by learning fundamental analysis techniques, from asking questions of your data to using core geoprocessing tools.',
+            modules: [
+                { id: 'u5l1', title: 'Attribute Queries', type: 'lecture', description: 'Learn how to select features based on their attribute data using structured queries (SQL).', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 min' },
+                { id: 'u5p1', title: 'Lab: Select By Attributes', type: 'lab', description: 'Ask questions of your data. The online lab introduces the Map Viewer, while the Pro lab focuses on selecting and extracting a subset of data.', duration: '25 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-map-viewer/', pro: 'https://learn.arcgis.com/en/projects/select-and-extract-a-subset-of-features/' } },
+                { id: 'u5l2', title: 'Spatial Queries', type: 'lecture', description: 'Learn how to select features based on their spatial relationship to other features (e.g., intersect, contain, are within a distance of).', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 min' },
+                { id: 'u5p2', title: 'Lab: Select By Location', type: 'lab', description: 'Find features based on their spatial relationships. The online lab introduces the Map Viewer, while the Pro lab focuses on the selecting and extracting features.', duration: '25 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-map-viewer/', pro: 'https://learn.arcgis.com/en/projects/select-and-extract-a-subset-of-features/' } },
+                { id: 'u5l3', title: 'Introduction to Geoprocessing', type: 'lecture', description: 'Understand the concept of using tools to manipulate datasets, focusing on core vector analysis tools like Buffer and Clip.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 min' },
+                { 
+                    id: 'u5i1', 
+                    title: 'Flashcards: Geoprocessing Tools', 
+                    type: 'flashcards', 
+                    description: 'Review the definitions of core geoprocessing tools like Buffer, Clip, Intersect, and Dissolve.', 
+                    duration: '5 min',
+                    flashcards: [
+                        { term: 'Geoprocessing', definition: 'A GIS operation used to manipulate spatial data, taking an input dataset and returning a new output dataset.' },
+                        { term: 'Buffer', definition: 'An operation that creates a zone of a specified distance around a feature. Useful for proximity analysis.' },
+                        { term: 'Clip', definition: 'An operation that extracts input features that overlay the clip features. It acts like a cookie cutter.' },
+                        { term: 'Intersect', definition: 'An operation that computes a geometric intersection of the input features. Features or portions of features which overlap in all layers will be written to the output feature class.' },
+                        { term: 'Dissolve', definition: 'An operation that aggregates features based on a specified attribute, effectively merging adjacent polygons with the same attribute value.' },
+                    ]
+                },
+                { id: 'u5p3', title: 'Lab: Basic Geoprocessing', type: 'lab', description: 'Use geoprocessing tools to solve a real-world spatial problem by predicting deforestation in the Amazon.', duration: '30 min', externalUrls: { pro: 'https://learn.arcgis.com/en/projects/predict-deforestation-in-the-amazon-rain-forest/' } },
+                {
+                    id: 'u5q1',
+                    title: 'Quiz: Basic Analysis',
+                    type: 'quiz',
+                    description: 'Test your understanding of basic query and geoprocessing techniques.',
+                    duration: '7 min',
+                    questions: [
+                      { text: 'An operation that creates a zone of a specified distance around a feature is called:', options: ['Clip', 'Join', 'Buffer', 'Dissolve'], correctAnswer: 2, },
+                      { text: 'To extract features from one layer that fall within the boundary of another layer (like a cookie cutter), you would use:', options: ['Buffer', 'Clip', 'Merge', 'Select'], correctAnswer: 1, },
+                       { text: 'A query that selects all features that "intersect" with another feature is a type of:', options: ['Attribute Query', 'Database Query', 'Spatial Query', 'Text Query'], correctAnswer: 2, },
+                    ],
+                  },
+            ]
+          },
+           {
+            id: 'unit6',
+            title: 'Unit 6: The Art of the Map',
+            description: 'Learn the principles of cartography to effectively communicate your data and analysis by creating clear, compelling, and well-designed maps.',
+            modules: [
+                { id: 'u6l1', title: 'Principles of Cartography', type: 'lecture', description: 'Discover the core principles of map design, including visual hierarchy, balance, and clarity.', videoUrl: YOUTUBE_VIDEO_URL, duration: '10 min' },
+                { id: 'u6l2', title: 'Symbology and Classification', type: 'lecture', description: 'Learn how to symbolize data effectively using colors, shapes, and sizes, and how to classify numerical data using methods like Natural Breaks and Equal Interval.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 min' },
+                { 
+                    id: 'u6r1', 
+                    title: 'Reading: Choosing Colors', 
+                    type: 'reading-flashcards', 
+                    description: 'An introduction to using color theory and tools like ColorBrewer to create maps that are both beautiful and accessible.', 
+                    duration: '10 min',
+                    readingCards: [
+                        { frontContent: "Color is one of the most powerful tools in map-making. The right color choices can make a map clear, intuitive, and beautiful. The wrong choices can make it confusing, misleading, or even unreadable.", backContent: "Key Idea: Color is not just for decoration; it is a vital part of communicating information on a map." },
+                        { frontContent: "It's important to choose color schemes that match your data. For sequential data (e.g., low to high population), use a gradient of a single color. For diverging data (e.g., values above and below an average), use two different colors that diverge from a neutral middle. For categorical data (e.g., land use types), use distinct, unrelated colors.", backContent: "Check Your Understanding: What kind of color scheme would you use to map temperature change, showing areas that got warmer and areas that got cooler?" },
+                        { frontContent: "Tools like ColorBrewer (colorbrewer2.org) are invaluable resources. They provide pre-made, tested color schemes that are cartographically sound and even filter for colorblind-safe and print-friendly options. This helps ensure your map is accessible to the widest possible audience.", backContent: "Synthesis: Using established resources like ColorBrewer and matching your color scheme to your data type are fundamental skills for effective cartography." }
+                    ]
+                },
+                { id: 'u6p1', title: 'Lab: Symbolizing Data', type: 'lab', description: 'Practice the art of cartography. The online lab teaches symbolizing by size, while the Pro path covers symbolizing and publishing maps.', duration: '30 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/symbolize-by-size/', pro: 'https://learn.arcgis.com/en/paths/symbolize-data-and-publish-maps/' } },
+                { id: 'u6l3', title: 'Essential Map Elements', type: 'lecture', description: 'Learn about the mandatory elements every map needs: a title, legend, scale bar, north arrow, and data source credits.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 min' },
+                { id: 'u6p2', title: 'Lab: Creating a Map Layout', type: 'lab', description: 'Assemble a final map. The online lab covers the basics of ArcGIS Online, while the Pro lab focuses on creating a presentation-quality print layout.', duration: '35 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/cartographic-creations-arrange-a-map-layout/' } },
+                {
+                    id: 'u6q1',
+                    title: 'Quiz: Cartography',
+                    type: 'quiz',
+                    description: 'Check your knowledge of map design principles and elements.',
+                    duration: '5 min',
+                    questions: [
+                      { text: 'Which map element explains what the symbols on the map mean?', options: ['Scale Bar', 'North Arrow', 'Title', 'Legend'], correctAnswer: 3, },
+                      { text: 'A map that uses shading or coloring of areas to represent a quantity is known as a:', options: ['Topographic Map', 'Choropleth Map', 'Reference Map', 'Street Map'], correctAnswer: 1, },
+                    ],
+                  },
+            ]
+          },
+          {
+            id: 'project',
+            title: 'Final Project',
+            description: "Apply everything you've learned to a single, comprehensive course project from start to finish.",
+            modules: [
+              { id: 'cp1', title: 'A: Define a Question', type: 'project', description: 'Choose a topic and define a clear geographic question you want to answer with your project.', duration: '30 min' },
+              { id: 'cp2', title: 'B: Find & Prepare Data', type: 'project', description: 'Gather the necessary spatial data, ensure it has the correct projection, and prepare it for analysis.', duration: '60 min' },
+              { id: 'cp3', title: 'C: Perform Analysis', type: 'project', description: 'Use query and geoprocessing tools to analyze your data and answer your project question.', duration: '45 min' },
+              { id: 'cp4', title: 'D: Create the Final Map', type: 'project', description: 'Design a high-quality map that clearly communicates your findings, complete with all necessary cartographic elements.', duration: '60 min' },
+              { id: 'cp5', title: 'Final Submission', type: 'final', description: 'Submit your complete project including maps, data, and a written summary of your workflow and results.', duration: '15 min' },
+            ],
+          },
+        ];
+
+        const arCourseData = [
+          {
+            id: 'unit1',
+            title: 'الوحدة 1: الأساسيات',
+            description: 'ابدأ رحلتك بفهم ما هو نظام المعلومات الجغرافية، ولماذا هو مهم، وكيفية التفكير مكانيًا.',
+            modules: [
+              { id: 'u1l1', title: 'مرحبًا بك في نظم المعلومات الجغرافية', type: 'lecture', description: 'مقدمة للدورة وأهدافها وعالم نظم المعلومات الجغرافية المثير.', videoUrl: YOUTUBE_VIDEO_URL, duration: 'دقيقتان' },
+              { 
+                id: 'u1r1', 
+                title: 'قراءة: التفكير المكاني', 
+                type: 'reading-flashcards', 
+                description: 'تعلم رؤية العالم من خلال عدسة جغرافية وفهم أهمية الموقع باستخدام هذه البطاقات القرائية التفاعلية.', 
+                duration: '15 دقيقة',
+                readingCards: [
+                  { frontContent: "ما هو التفكير المكاني؟ إنه أكثر من مجرد معرفة أماكن الأشياء. إنها القدرة على رؤية وفهم وتحليل الأنماط والعلاقات بين الأماكن والظواهر. يتضمن التفكير في المكان والمسافة والاتجاه وكيفية توزيع المعالم عبر منظر طبيعي.", backContent: "الفكرة الرئيسية: التفكير المكاني يدور حول فهم 'سبب وجود الشيء في مكانه'. إنها مهارة تحليلية." },
+                  { frontContent: "جانب مهم من التفكير المكاني هو فهم المقياس—النسبة بين المسافة على الخريطة والمسافة المقابلة على الأرض. الخريطة ذات المقياس الكبير تظهر منطقة صغيرة بتفصيل كبير (مثل حي)، بينما الخريطة ذات المقياس الصغير تظهر منطقة كبيرة بتفاصيل أقل (مثل خريطة العالم).", backContent: "مصطلح رئيسي: المقياس - مستوى التفاصيل والمساحة المغطاة على الخريطة. مقياس كبير = منطقة صغيرة، تفاصيل عالية. مقياس صغير = منطقة كبيرة، تفاصيل منخفضة." },
+                  { frontContent: "مفهوم رئيسي آخر هو النمط المكاني للمعالم. هل هي متجمعة معًا، أم متفرقة عشوائيًا، أم مرتبة في نمط منتظم؟ تحديد هذه الأنماط غالبًا ما يكون الخطوة الأولى في فهم العمليات الأساسية التي تخلقها.", backContent: "تحقق من فهمك: أي نوع من الأنماط المكانية تتوقع رؤيته لمواقع ستاربكس في مدينة رئيسية؟ ماذا عن صنابير إطفاء الحريق؟" },
+                  { frontContent: "في نظم المعلومات الجغرافية، نستخدم كل من الموقع المطلق (إحداثي دقيق) والموقع النسبي (موضع مكان بالنسبة لآخرين). يعطينا الموقع المطلق البيانات لرسم الخريطة، بينما يساعدنا الموقع النسبي في إجراء تحليل هادف، مثل العثور على جميع المستشفيات في نطاق 5 أميال من طريق سريع رئيسي.", backContent: "توليف: تجمع نظم المعلومات الجغرافية بين المواقع المطلقة الدقيقة والقوة التحليلية لفهم المواقع النسبية والأنماط والمقاييس لحل المشكلات المعقدة." }
+                ]
+              },
+              { id: 'u1l2', title: 'مكونات نظام المعلومات الجغرافية', type: 'lecture', description: 'اكتشف المكونات الخمسة الرئيسية لنظام المعلومات الجغرافية: الأجهزة، البرامج، البيانات، الأشخاص، والأساليب.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 دقيقة' },
+              { 
+                id: 'u1i1', 
+                title: 'بطاقات تعليمية: نظم المعلومات الجغرافية في العالم الحقيقي', 
+                type: 'flashcards', 
+                description: 'راجع المصطلحات الرئيسية حول تطبيقات نظم المعلومات الجغرافية في العالم الحقيقي، من التخطيط الحضري والاستجابة للكوارث إلى التسويق والحفاظ على البيئة.', 
+                duration: '5 دقائق',
+                flashcards: [
+                    { term: 'نظم المعلومات الجغرافية (GIS)', definition: 'نظام مصمم لالتقاط وتخزين ومعالجة وتحليل وإدارة وتقديم جميع أنواع البيانات الجغرافية.' },
+                    { term: 'التفكير المكاني', definition: 'القدرة على تصور وتحليل وتفسير المعلومات المستندة إلى الموقع لفهم العلاقات والأنماط.'},
+                    { term: 'الأجهزة (Hardware)', definition: 'أجهزة الكمبيوتر المادية والأجهزة المستخدمة في نظم المعلومات الجغرافية، من أجهزة سطح المكتب إلى الخوادم والأجهزة المحمولة.' },
+                    { term: 'البرامج (Software)', definition: 'برامج الكمبيوتر التي توفر الأدوات للعمل مع المعلومات الجغرافية.' },
+                    { term: 'البيانات (Data)', definition: 'المعلومات الجغرافية والجدولية المستخدمة في نظام المعلومات الجغرافية. وهي جوهر أي تطبيق لنظم المعلومات الجغرافية.' },
+                    { term: 'الأشخاص (People)', definition: 'المستخدمون الذين يقومون ببناء وصيانة وتطبيق نظم المعلومات الجغرافية لمشاكل محددة.' },
+                    { term: 'الأساليب (Methods)', definition: 'الخطط والقواعد والإجراءات التي توجه كيفية استخدام نظام المعلومات الجغرافية داخل المنظمة.' },
+                ]
+              },
+              { id: 'u1p1', title: 'مختبر: استكشاف الخرائط عبر الإنترنت', type: 'lab', description: 'احصل على تدريب عملي مع نظم المعلومات الجغرافية. اختر الإصدار عبر الإنترنت لتعلم التنقل في الخريطة وأساسيات الطبقات في ArcGIS Online، أو إصدار Pro لجولة في واجهة برنامج سطح المكتب. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '20 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/' } },
+              {
+                id: 'u1q1',
+                title: 'اختبار: المفاهيم الأساسية',
+                type: 'quiz',
+                description: 'اختبر مدى فهمك للمفاهيم والمكونات الأساسية لنظم المعلومات الجغرافية.',
+                duration: '5 دقائق',
+                questions: [
+                  { text: 'ما هي المكونات الخمسة الرئيسية لنظام المعلومات الجغرافية؟', options: ['النقاط، الخطوط، المضلعات، البيانات النقطية، الجداول', 'الأجهزة، البرامج، البيانات، الأشخاص، الأساليب', 'الخرائط، الكرات الأرضية، الأطالس، الرسوم البيانية، GPS', 'الأقمار الصناعية، الطائرات بدون طيار، الخوادم، أجهزة سطح المكتب، الهواتف'], correctAnswer: 1, },
+                  { text: 'التفكير المكاني يعني فهم أهمية...', options: ['برمجة البرمجيات', 'الموقع المطلق والنسبي للمعالم', 'إدارة قواعد البيانات', 'التصميم الجرافيكي'], correctAnswer: 1, },
+                ],
+              },
+            ],
+          },
+          // ... (All other units in Arabic with YOUTUBE_VIDEO_URL)
+          {
+            id: 'unit2',
+            title: 'الوحدة 2: طبيعة البيانات المكانية',
+            description: 'تعلم كيف نمثل العالم الحقيقي رقميًا باستخدام نموذجي بيانات نظم المعلومات الجغرافية الأساسيين: المتجهي والنقطي.',
+            modules: [
+              { id: 'u2l1', title: 'نموذج البيانات المتجهية', type: 'lecture', description: 'نظرة متعمقة على النقاط والخطوط والمضلعات، وكيف تمثل المعالم المنفصلة في العالم.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 دقيقة' },
+              { 
+                id: 'u2r1', 
+                title: 'قراءة: فهم السمات', 
+                type: 'reading-flashcards', 
+                description: 'استكشف كيفية تخزين البيانات غير المكانية في جداول السمات وربطها بالمعالم المتجهية.', 
+                duration: '15 دقيقة',
+                readingCards: [
+                  { frontContent: "كل معلم على خريطة نظم المعلومات الجغرافية - سواء كان نقطة أو خطًا أو مضلعًا - لديه معلومات تصفه. هذه المعلومات الوصفية تسمى 'السمات'. على سبيل المثال، قد يكون لنقطة تمثل مدينة سمات مثل اسمها وعدد سكانها وعمدتها.", backContent: "الفكرة الرئيسية: السمات هي 'ماذا' و 'كم' التي تصف 'أين' معلم جغرافي." },
+                  { frontContent: "يتم تخزين هذه المعلومات في تنسيق منظم يسمى جدول السمات. فكر فيه كجدول بيانات مرتبط مباشرة بالأشكال الموجودة على الخريطة. كل صف في الجدول يتوافق مع معلم واحد، وكل عمود يمثل سمة محددة، ويُعرف أيضًا باسم 'حقل'.", backContent: "مصطلح رئيسي: جدول السمات - قاعدة بيانات أو ملف جدولي يحتوي على معلومات (في حقول) حول مجموعة من المعالم الجغرافية، حيث يمثل كل صف معلمًا واحدًا." },
+                  { frontContent: "حقول السمات لها أنواع بيانات محددة، مثل نص (للأسماء)، أو عدد صحيح (للأرقام الكاملة مثل عدد السكان)، أو تاريخ. يعد اختيار نوع البيانات الصحيح أمرًا مهمًا لكفاءة التخزين ولتمكين أنواع معينة من الاستعلامات والحسابات.", backContent: "تحقق من فهمك: ما هو أفضل نوع بيانات لتخزين السمات التالية: اسم نهر، وطوله بالكيلومترات، وتاريخ آخر مسح له؟" },
+                  { frontContent: "الرابط بين معلم الخريطة وصفه في جدول السمات أمر بالغ الأهمية، وغالبًا ما تتم إدارته بواسطة حقل معرف فريد. إذا قمت بتحديد معلم على الخريطة، يتم تمييز صفه المقابل في الجدول. وإذا قمت بتحديد صف في الجدول، يضيء المعلم المقابل على الخريطة. هذا هو الاتصال الأساسي في نظم المعلومات الجغرافية.", backContent: "توليف: هذا الرابط ثنائي الاتجاه بين الهندسة (الشكل) والسمات (البيانات) هو ما يمنح نظم المعلومات الجغرافية قوتها التحليلية." }
+                ]
+              },
+              { id: 'u2p1', title: 'مختبر: استكشاف البيانات المتجهية', type: 'lab', description: 'استخدم برنامج نظم المعلومات الجغرافية لفحص مجموعة بيانات، وعرض محتوياتها، والتعرف على واجهة ArcGIS. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '25 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/' } },
+              { id: 'u2l2', title: 'نموذج البيانات النقطية', type: 'lecture', description: 'تعلم كيف يتم تمثيل الظواهر المستمرة مثل الارتفاع ودرجة الحرارة باستخدام شبكة من الخلايا.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 دقيقة' },
+              { 
+                id: 'u2r2', 
+                title: 'قراءة: البكسلات والقيم', 
+                type: 'reading-flashcards', 
+                description: 'افهم كيف تخزن كل خلية في شبكة نقطية قيمة وما يمكن أن تمثله تلك القيم.', 
+                duration: '10 دقائق',
+                readingCards: [
+                  { frontContent: "على عكس البيانات المتجهية التي لها أشكال مميزة، فإن البيانات النقطية هي شبكة مستمرة من الخلايا، تشبه إلى حد كبير البكسلات في صورة فوتوغرافية رقمية. كل خلية فردية في الشبكة لها قيمة واحدة مخصصة لها.", backContent: "الفكرة الرئيسية: تمثل البيانات النقطية العالم كسطح مقسم إلى شبكة منتظمة من الخلايا." },
+                  { frontContent: "ماذا تعني هذه القيم؟ يمكن أن تمثل أشياء كثيرة! في نموذج الارتفاع الرقمي (DEM)، تكون قيمة كل خلية هي ارتفاعها فوق مستوى سطح البحر. في صورة قمر صناعي، يمكن أن تمثل القيمة سطوع الضوء المنعكس من سطح الأرض في نطاق لوني معين.", backContent: "تحقق من فهمك: ماذا يمكن أن تمثل قيم الخلايا في شبكة نقطية إذا كنت ترسم خريطة لمتوسط هطول الأمطار السنوي؟ ماذا عن درجة حرارة سطح الأرض؟" },
+                  { frontContent: "يُعرف حجم الخلايا في الشبكة بـ 'دقة' البيانات النقطية. دقة 1 متر تعني أن كل خلية تمثل مربعًا بحجم 1x1 متر على الأرض. حجم خلية أصغر يعني دقة أعلى وتفاصيل أكثر، ولكنه يعني أيضًا حجم ملف أكبر بكثير.", backContent: "مصطلح رئيسي: الدقة - حجم خلايا الشبكة في مجموعة بيانات نقطية، والذي يحدد مستوى التفاصيل." }
+                ]
+              },
+              { id: 'u2p2', title: 'مختبر: استكشاف البيانات النقطية', type: 'lab', description: 'شاهد نموذج البيانات النقطية عمليًا. يستكشف المختبر عبر الإنترنت Living Atlas، بينما يرشدك مسار Pro خلال استخدام البيانات النقطية والصور. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '25 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-living-atlas-of-the-world/', pro: 'https://learn.arcgis.com/en/paths/using-raster-data-and-imagery-in-arcgis-pro/' } },
+              { 
+                id: 'u2i1', 
+                title: 'بطاقات تعليمية: المتجهي مقابل النقطي', 
+                type: 'flashcards', 
+                description: 'راجع المصطلحات الرئيسية لمقارنة كيفية نمذجة معالم العالم الحقيقي باستخدام كل من البيانات المتجهية والنقطية.', 
+                duration: '5 دقائق',
+                flashcards: [
+                    { term: 'البيانات المتجهية', definition: 'نموذج بيانات يستخدم النقاط والخطوط والمضلعات لتمثيل المعالم الجغرافية المنفصلة ذات الحدود المحددة جيدًا.' },
+                    { term: 'البيانات النقطية', definition: 'نموذج بيانات يستخدم شبكة من الخلايا (أو البكسلات) لتمثيل الظواهر المستمرة. كل خلية لها قيمة.' },
+                    { term: 'النقطة', definition: 'زوج إحداثيات واحد (x,y) يمثل معلمًا جغرافيًا صغيرًا جدًا بحيث لا يمكن عرضه كخط أو مساحة، مثل بئر أو عمود هاتف.' },
+                    { term: 'الخط (أو القوس)', definition: 'معلم مصنوع من سلسلة من النقاط المتصلة يستخدم لتمثيل المعالم الخطية مثل الطرق أو الأنهار.' },
+                    { term: 'المضلع', definition: 'معلم مغلق متعدد الأضلاع محدد بمجموعة من الخطوط المتصلة، يمثل مساحة مثل بحيرة أو مبنى أو ولاية.' },
+                    { term: 'جدول السمات', definition: 'جدول للمعلومات غير المكانية المرتبط بالمعالم الجغرافية. كل صف يتوافق مع معلم.' },
+                ]
+              },
+              {
+                id: 'u2q1',
+                title: 'اختبار: نماذج البيانات',
+                type: 'quiz',
+                description: 'تحقق من فهمك للاختلافات ونقاط القوة والضعف في البيانات المتجهية والنقطية.',
+                duration: '7 دقائق',
+                questions: [
+                  { text: 'أي نموذج بيانات هو الأنسب لتمثيل المعالم المنفصلة مثل الطرق أو المباني؟', options: ['نقطي', 'جدولي', 'متجهي', 'طبولوجي'], correctAnswer: 2, },
+                  { text: 'صورة القمر الصناعي هي مثال على أي نوع من البيانات؟', options: ['متجهي', 'نقطي', 'سمات', 'شبكي'], correctAnswer: 1, },
+                  { text: 'في نموذج البيانات المتجهية، يتم تخزين المعلومات حول المعلم (مثل اسمه أو حجمه) في...', options: ['بكسل', 'ملف نصي', 'جدول السمات', 'ملف رأس'], correctAnswer: 2, },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'unit3',
+            title: 'الوحدة 3: أين في العالم؟',
+            description: 'استوعب المفاهيم الحاسمة لنظم الإحداثيات، المساند، وإسقاطات الخرائط التي تسمح لنا بتحديد موقع البيانات بدقة على سطح الأرض.',
+            modules: [
+              { id: 'u3l1', title: 'شكل الأرض', type: 'lecture', description: 'تعرف على الجيويد، الإهليلج، والمساند، وهي النماذج الأساسية لتحديد الموقع على الأرض.', videoUrl: YOUTUBE_VIDEO_URL, duration: '10 دقائق' },
+              { id: 'u3l2', title: 'نظم الإحداثيات الجغرافية', type: 'lecture', description: 'افهم خطوط الطول والعرض وكيف يحدد هذا النظام الزاوي أي موقع على الكرة الأرضية.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 دقيقة' },
+              { 
+                id: 'u3r1', 
+                title: 'قراءة: شرح الإسقاطات', 
+                type: 'reading-flashcards', 
+                description: 'تعمق في سبب حاجتنا لإسقاطات الخرائط والتشوهات الحتمية التي تخلقها (الشكل، المساحة، المسافة، الاتجاه).', 
+                duration: '15 دقيقة',
+                readingCards: [
+                  { frontContent: "التحدي الأساسي في صنع الخرائط هو تمثيل أرضنا ثلاثية الأبعاد والكروية على سطح مستو ثنائي الأبعاد. هذه العملية تسمى إسقاط الخريطة.", backContent: "الفكرة الرئيسية: إسقاط الخريطة هو تحويل منهجي لخطوط الطول والعرض للمواقع من سطح كرة إلى مستوى." },
+                  { frontContent: "يمكن تصور الإسقاطات من خلال تخيل مصدر ضوء داخل كرة أرضية شفافة يلقي بظلال شبكة الإحداثيات على سطح. شكل هذا السطح - أسطوانة أو مخروط أو مستوى - يحدد 'عائلة' الإسقاط ويحدد خصائص تشوهه.", backContent: "العائلات الرئيسية: المخروطية والأسطوانية والمستوية (أو السمتية) هي الأسطح الثلاثة الرئيسية القابلة للتطوير المستخدمة في إسقاطات الخرائط." },
+                  { frontContent: "هناك أربع خصائص رئيسية يمكن أن يشوهها الإسقاط: الشكل، المساحة، المسافة، والاتجاه. الإسقاط الذي يحافظ على خاصية واحدة يجب أن يشوه الخصائص الأخرى. على سبيل المثال، يحافظ إسقاط مركاتور الشهير على الشكل والاتجاه المحلي (مطابق)، ولكنه يشوه المساحة بشكل كبير بالقرب من القطبين.", backContent: "مصطلح رئيسي: التشوه - التغيير الحتمي في الخصائص المكانية عند إسقاط سطح ثلاثي الأبعاد على خريطة ثنائية الأبعاد." },
+                  { frontContent: "يعد اختيار الإسقاط أمرًا بالغ الأهمية. يعد الإسقاط متساوي المساحات ضروريًا لخريطة مواضيعية توضح الكثافة السكانية، بينما يستخدم الإسقاط المطابق لخرائط الملاحة حيث تكون الزوايا مهمة. قد يتم اختيار إسقاط متساوي المسافات إذا كان قياس المسافات من نقطة مركزية هو الهدف الرئيسي.", backContent: "توليف: يعتمد الإسقاط 'الأفضل' كليًا على الغرض من الخريطة، وموقع ومدى المنطقة التي يتم رسمها، والتحليل الذي يتم إجراؤه." }
+                ]
+              },
+              { id: 'u3l3', title: 'نظم الإحداثيات المسقطة', type: 'lecture', description: 'اكتشف كيف "نفرد" الأرض ثلاثية الأبعاد على خريطة مسطحة ثنائية الأبعاد باستخدام إسقاطات شائعة مثل UTM و State Plane.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 دقيقة' },
+              { 
+                id: 'u3i1', 
+                title: 'بطاقات تعليمية: مفاهيم الإسقاط', 
+                type: 'flashcards', 
+                description: 'راجع المصطلحات الرئيسية لفهم كيف تغير الإسقاطات المختلفة بشكل كبير مظهر القارات.', 
+                duration: '5 دقائق',
+                flashcards: [
+                    { term: 'إسقاط الخريطة', definition: 'طريقة لتمثيل سطح الأرض المنحني على سطح مستو. جميع الإسقاطات تدخل تشوهًا.' },
+                    { term: 'التشوه', definition: 'التغيير الحتمي في الشكل أو المساحة أو المسافة أو الاتجاه عند تمثيل سطح ثلاثي الأبعاد على خريطة ثنائية الأبعاد.' },
+                    { term: 'المسند (Datum)', definition: 'نظام مرجعي يحدد حجم وشكل الأرض، وأصل أنظمة الإحداثيات المستخدمة لرسم خرائطها.' },
+                    { term: 'نظام الإحداثيات الجغرافي (GCS)', definition: 'نظام إحداثيات يستخدم سطحًا كرويًا ثلاثي الأبعاد (خطوط الطول/العرض) لتحديد المواقع.' },
+                    { term: 'نظام الإحداثيات المسقط (PCS)', definition: 'نظام إحداثيات يعتمد على إسقاط خريطة مسطح وثنائي الأبعاد، باستخدام وحدات خطية مثل الأمتار أو الأقدام.' },
+                ]
+              },
+              { id: 'u3p1', title: 'مختبر: العمل مع الإسقاطات', type: 'lab', description: 'استكشف كيف تغير الإسقاطات مظهر الخريطة. يعلمك المختبر عبر الإنترنت كيفية اختيار الإسقاط الصحيح، بينما يركز مختبر Pro على العمل مع أنظمة الإحداثيات على سطح المكتب. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '30 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/choose-the-right-projection/', pro: 'https://learn.arcgis.com/en/projects/choose-the-right-projection/' } },
+              {
+                id: 'u3q1',
+                title: 'اختبار: نظم الإحداثيات',
+                type: 'quiz',
+                description: 'اختبر معلوماتك حول الفرق بين GCS و PCS ودور الإسقاطات.',
+                duration: '7 دقائق',
+                questions: [
+                  { text: 'ما هو الغرض الأساسي من إسقاط الخريطة؟', options: ['لجعل الخرائط تبدو فنية', 'لتمثيل سطح الأرض ثلاثي الأبعاد على خريطة ثنائية الأبعاد', 'لتخزين البيانات بكفاءة', 'لقياس الارتفاع'], correctAnswer: 1, },
+                  { text: 'خطوط الطول والعرض هي جزء من أي نوع من أنظمة الإحداثيات؟', options: ['نظام الإحداثيات المسقط', 'نظام الإحداثيات الجغرافي', 'مركاتور المستعرض العالمي', 'State Plane'], correctAnswer: 1, },
+                   { text: 'كل إسقاط خريطة يدخل شكلاً من أشكال...', options: ['التشوه', 'اللون', 'بيانات السمات', 'الطوبولوجيا'], correctAnswer: 0, },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'unit4',
+            title: 'الوحدة 4: الحصول على البيانات المكانية',
+            description: 'تعلم من أين تأتي بيانات نظم المعلومات الجغرافية، من جمعها بنفسك إلى العثور على مجموعات بيانات موثوقة موجودة.',
+            modules: [
+                { id: 'u4l1', title: 'مصادر البيانات', type: 'lecture', description: 'نظرة عامة على المصادر الأولية والثانوية للبيانات المكانية، بما في ذلك الأقمار الصناعية والتصوير الجوي ونظام تحديد المواقع العالمي (GPS).', videoUrl: YOUTUBE_VIDEO_URL, duration: '10 دقائق' },
+                { 
+                    id: 'u4r1', 
+                    title: 'قراءة: جودة البيانات والبيانات الوصفية', 
+                    type: 'reading-flashcards', 
+                    description: 'تعلم لماذا يعد فهم جودة مجموعة البيانات ودقتها وتاريخها من خلال بياناتها الوصفية أمرًا بالغ الأهمية.', 
+                    duration: '15 دقيقة',
+                    readingCards: [
+                      { frontContent: "ليست كل البيانات متساوية. قبل استخدام أي مجموعة بيانات، يجب أن تسأل: 'هل يمكنني الوثوق بها؟' تشير جودة البيانات إلى مدى ملاءمة مجموعة البيانات لغرض معين. وهذا يتجاوز مجرد الدقة.", backContent: "الفكرة الرئيسية: ستؤدي بيانات الإدخال ذات الجودة الرديئة دائمًا إلى نتائج تحليل ذات الجودة رديئة. وهذا ما يسمى غالبًا 'القمامة تدخل، القمامة تخرج'." },
+                      { frontContent: "تشمل المكونات الرئيسية لجودة البيانات: الدقة الموضعية (مدى قرب المعالم من مواقعها الحقيقية)، ودقة السمات (مدى صحة البيانات الوصفية)، والاتساق المنطقي (ضمان اتباع البيانات لقواعد منطقية)، والاكتمال (هل جميع المعالم المتوقعة موجودة؟).", backContent: "تحقق من فهمك: إذا كانت خريطة الأنهار تفتقد العديد من الروافد الرئيسية، فأي مكون من مكونات جودة البيانات مفقود؟" },
+                      { frontContent: "كيف نقيم جودة البيانات؟ ننظر إلى 'بياناتها الوصفية'. البيانات الوصفية هي 'بيانات حول البيانات'. إنها ملف يصف تاريخ مجموعة البيانات: من أنشأها، ومتى، ولماذا، ومصادر البيانات المستخدمة، ونظام الإحداثيات الخاص بها، وقيودها المعروفة.", backContent: "مصطلح رئيسي: البيانات الوصفية (Metadata) - ملف وصفي يحتوي على معلومات حول مجموعة بيانات، وهو أمر حاسم لفهم أصلها وجودتها واستخدامها السليم." },
+                      { frontContent: "تخيل العثور على مجموعة بيانات تسمى 'roads.shp'. بدون بيانات وصفية، لا تعرف ما إذا كانت تشمل جميع الطرق أم الطرق السريعة فقط، أو دقتها، أو متى تم تحديثها. البيانات غير صالحة للاستعمال لأي تحليل جاد.", backContent: "توليف: توفر البيانات الوصفية السياق الذي يحول البيانات الأولية إلى معلومات موثوقة، مما يسمح لك بتقييم جودتها وملاءمتها لغرضك." }
+                    ]
+                },
+                { id: 'u4l2', title: 'الترقيم على الشاشة (Heads-Up Digitizing)', type: 'lecture', description: 'افهم عملية إنشاء بيانات متجهية جديدة عن طريق تتبع المعالم من خريطة أساس أو صورة.', videoUrl: YOUTUBE_VIDEO_URL, duration: '8 دقائق' },
+                { id: 'u4p1', title: 'مختبر: ترقيم المعالم', type: 'lab', description: 'اكتسب خبرة عملية من خلال إنشاء معالم متجهية جديدة. يستخدم المختبر عبر الإنترنت محرر خرائط المجتمع، بينما يعلمك مختبر Pro كيفية نسخ المعالم. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '30 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/digitize-your-neighborhood-with-arcgis-community-maps-editor/', pro: 'https://learn.arcgis.com/en/projects/copy-features-between-layers/' } },
+                { 
+                    id: 'u4r2', 
+                    title: 'قراءة: بوابات البيانات المفتوحة', 
+                    type: 'reading-flashcards', 
+                    description: 'دليل للعثور على بيانات نظم المعلومات الجغرافية المجانية والموثوقة من المصادر الحكومية والعلمية.', 
+                    duration: '10 دقائق',
+                    readingCards: [
+                        { frontContent: "لحسن الحظ، لا يتعين عليك دائمًا إنشاء بياناتك الخاصة. تتوفر كمية هائلة من بيانات نظم المعلومات الجغرافية عالية الجودة مجانًا من 'بوابات البيانات المفتوحة'. هذه مواقع ويب، تديرها عادةً وكالات حكومية، توفر وصولاً عامًا إلى بياناتها الجغرافية المكانية.", backContent: "الفكرة الرئيسية: تعد بوابات البيانات المفتوحة موردًا أساسيًا للعثور على بيانات نظم المعلومات الجغرافية الموثوقة والموجودة مسبقًا." },
+                        { frontContent: "تشمل الأمثلة بوابات نظم المعلومات الجغرافية للمدينة أو المقاطعة المحلية، ومراكز تبادل المعلومات الجغرافية على مستوى الولاية، والمصادر على المستوى الوطني. توفر هذه المصادر بيانات 'موثوقة'، مما يعني أنها تم إنشاؤها وصيانتها من قبل منظمة رسمية.", backContent: "تحقق من فهمك: لماذا غالبًا ما يكون من الأفضل استخدام البيانات من بوابة حكومية رسمية بدلاً من موقع ويب عشوائي؟" },
+                        { frontContent: "عند استخدام بوابة بيانات مفتوحة، يمكنك عادةً البحث عن البيانات عن طريق الكلمات الرئيسية أو التصفح حسب الفئة. تتوفر البيانات عادةً بتنسيقات شائعة مثل ملفات الأشكال ويجب أن تكون مصحوبة دائمًا ببيانات وصفية.", backContent: "توليف: يوفر الاستفادة من بوابات البيانات المفتوحة وقتًا وموارد هائلة، مما يسمح لمحترفي نظم المعلومات الجغرافية بالتركيز على التحليل بدلاً من إنشاء البيانات." }
+                    ]
+                },
+                { id: 'u4p2', title: 'مختبر: البحث عن البيانات المفتوحة واستخدامها', type: 'lab', description: 'تعلم كيفية العثور على البيانات واستخدامها. يرشدك المختبر عبر الإنترنت خلال إضافة بيانات من Living Atlas، بينما يركز مختبر Pro على استخدام Living Atlas على سطح المكتب. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '25 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/add-data-to-a-web-map-from-arcgis-living-atlas/', pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-living-atlas-of-the-world/' } },
+                {
+                    id: 'u4q1',
+                    title: 'اختبار: الحصول على البيانات',
+                    type: 'quiz',
+                    description: 'قيم معرفتك بمصادر البيانات وطرق إنشائها.',
+                    duration: '5 دقائق',
+                    questions: [
+                      { text: 'إنشاء معالم خطية جديدة عن طريق تتبع الأنهار من صورة قمر صناعي يسمى:', options: ['النطاق الحرمي (Buffering)', 'المعالجة الجغرافية (Geoprocessing)', 'الترقيم على الشاشة (Heads-up Digitizing)', 'الإسقاط (Projecting)'], correctAnswer: 2, },
+                      { text: 'البيانات حول البيانات، التي تصف أصل وجودة وخصائص مجموعة البيانات، تسمى:', options: ['بيانات السمات (Attribute Data)', 'البيانات الوصفية (Metadata)', 'البيانات النقطية (Raster Data)', 'البيانات المتجهية (Vector Data)'], correctAnswer: 1, },
+                    ],
+                  },
+            ]
+          },
+            {
+            id: 'unit5',
+            title: 'الوحدة 5: مجموعة أدوات نظم المعلومات الجغرافية',
+            description: 'ابدأ في إطلاق العنان لقوة نظم المعلومات الجغرافية من خلال تعلم تقنيات التحليل الأساسية، من طرح الأسئلة على بياناتك إلى استخدام أدوات المعالجة الجغرافية الأساسية.',
+            modules: [
+                { id: 'u5l1', title: 'استعلامات السمات', type: 'lecture', description: 'تعلم كيفية تحديد المعالم بناءً على بيانات سماتها باستخدام استعلامات منظمة (SQL).', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 دقيقة' },
+                { id: 'u5p1', title: 'مختبر: التحديد حسب السمات', type: 'lab', description: 'اطرح أسئلة على بياناتك. يقدم المختبر عبر الإنترنت Map Viewer، بينما يركز مختبر Pro على تحديد واستخراج مجموعة فرعية من البيانات. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '25 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-map-viewer/', pro: 'https://learn.arcgis.com/en/projects/select-and-extract-a-subset-of-features/' } },
+                { id: 'u5l2', title: 'الاستعلامات المكانية', type: 'lecture', description: 'تعلم كيفية تحديد المعالم بناءً على علاقتها المكانية بالمعالم الأخرى (مثل، تتقاطع، تحتوي، تقع ضمن مسافة).', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 دقيقة' },
+                { id: 'u5p2', title: 'مختبر: التحديد حسب الموقع', type: 'lab', description: 'ابحث عن المعالم بناءً على علاقاتها المكانية. يقدم المختبر عبر الإنترنت Map Viewer، بينما يركز مختبر Pro على تحديد واستخراج المعالم. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '25 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-map-viewer/', pro: 'https://learn.arcgis.com/en/projects/select-and-extract-a-subset-of-features/' } },
+                { id: 'u5l3', title: 'مقدمة في المعالجة الجغرافية', type: 'lecture', description: 'افهم مفهوم استخدام الأدوات لمعالجة مجموعات البيانات، مع التركيز على أدوات تحليل المتجهات الأساسية مثل النطاق الحرمي (Buffer) والقص (Clip).', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 دقيقة' },
+                { 
+                    id: 'u5i1', 
+                    title: 'بطاقات تعليمية: أدوات المعالجة الجغرافية', 
+                    type: 'flashcards', 
+                    description: 'راجع تعريفات أدوات المعالجة الجغرافية الأساسية مثل النطاق الحرمي (Buffer)، والقص (Clip)، والتقاطع (Intersect)، والإذابة (Dissolve).', 
+                    duration: '5 دقائق',
+                    flashcards: [
+                        { term: 'المعالجة الجغرافية', definition: 'عملية في نظم المعلومات الجغرافية تستخدم لمعالجة البيانات المكانية، تأخذ مجموعة بيانات كمدخل وتعيد مجموعة بيانات جديدة كمخرج.' },
+                        { term: 'النطاق الحرمي (Buffer)', definition: 'عملية تنشئ منطقة ذات مسافة محددة حول معلم. مفيدة لتحليل القرب.' },
+                        { term: 'القص (Clip)', definition: 'عملية تستخرج المعالم المدخلة التي تتراكب مع معالم القص. تعمل مثل قاطعة البسكويت.' },
+                        { term: 'التقاطع (Intersect)', definition: 'عملية تحسب تقاطعًا هندسيًا للمعالم المدخلة. المعالم أو أجزاء المعالم التي تتداخل في جميع الطبقات ستتم كتابتها إلى فئة المعالم المخرجة.' },
+                        { term: 'الإذابة (Dissolve)', definition: 'عملية تجمع المعالم بناءً على سمة محددة، وتدمج بشكل فعال المضلعات المجاورة التي لها نفس قيمة السمة.' },
+                    ]
+                },
+                { id: 'u5p3', title: 'مختبر: المعالجة الجغرافية الأساسية', type: 'lab', description: 'استخدم أدوات المعالجة الجغرافية لحل مشكلة مكانية واقعية عن طريق التنبؤ بإزالة الغابات في الأمازون. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '30 دقيقة', externalUrls: { pro: 'https://learn.arcgis.com/en/projects/predict-deforestation-in-the-amazon-rain-forest/' } },
+                {
+                    id: 'u5q1',
+                    title: 'اختبار: التحليل الأساسي',
+                    type: 'quiz',
+                    description: 'اختبر فهمك لتقنيات الاستعلام والمعالجة الجغرافية الأساسية.',
+                    duration: '7 دقائق',
+                    questions: [
+                      { text: 'العملية التي تنشئ منطقة ذات مسافة محددة حول معلم تسمى:', options: ['القص (Clip)', 'الربط (Join)', 'النطاق الحرمي (Buffer)', 'الإذابة (Dissolve)'], correctAnswer: 2, },
+                      { text: 'لاستخراج المعالم من طبقة واحدة تقع داخل حدود طبقة أخرى (مثل قاطعة البسكويت)، يمكنك استخدام:', options: ['النطاق الحرمي (Buffer)', 'القص (Clip)', 'الدمج (Merge)', 'التحديد (Select)'], correctAnswer: 1, },
+                       { text: 'الاستعلام الذي يحدد جميع المعالم التي "تتقاطع" مع معلم آخر هو نوع من:', options: ['استعلام السمات', 'استعلام قاعدة البيانات', 'الاستعلام المكاني', 'الاستعلام النصي'], correctAnswer: 2, },
+                    ],
+                  },
+            ]
+          },
+            {
+            id: 'unit6',
+            title: 'الوحدة 6: فن الخريطة',
+            description: 'تعلم مبادئ علم الخرائط لتوصيل بياناتك وتحليلاتك بفعالية من خلال إنشاء خرائط واضحة ومقنعة ومصممة جيدًا.',
+            modules: [
+                { id: 'u6l1', title: 'مبادئ علم الخرائط', type: 'lecture', description: 'اكتشف المبادئ الأساسية لتصميم الخرائط، بما في ذلك التسلسل الهرمي البصري والتوازن والوضوح.', videoUrl: YOUTUBE_VIDEO_URL, duration: '10 دقائق' },
+                { id: 'u6l2', title: 'الترميز والتصنيف', type: 'lecture', description: 'تعلم كيفية ترميز البيانات بفعالية باستخدام الألوان والأشكال والأحجام، وكيفية تصنيف البيانات الرقمية باستخدام طرق مثل الفواصل الطبيعية والفاصل المتساوي.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 دقيقة' },
+                { 
+                    id: 'u6r1', 
+                    title: 'قراءة: اختيار الألوان', 
+                    type: 'reading-flashcards', 
+                    description: 'مقدمة لاستخدام نظرية الألوان وأدوات مثل ColorBrewer لإنشاء خرائط جميلة وسهلة الوصول.', 
+                    duration: '10 دقائق',
+                    readingCards: [
+                        { frontContent: "اللون هو أحد أقوى الأدوات في صنع الخرائط. يمكن أن تجعل اختيارات الألوان الصحيحة الخريطة واضحة وبديهية وجميلة. ويمكن أن تجعلها الاختيارات الخاطئة مربكة أو مضللة أو حتى غير قابلة للقراءة.", backContent: "الفكرة الرئيسية: اللون ليس مجرد زخرفة؛ إنه جزء حيوي من توصيل المعلومات على الخريطة." },
+                        { frontContent: "من المهم اختيار أنظمة ألوان تتناسب مع بياناتك. للبيانات المتسلسلة (مثل، من عدد سكان منخفض إلى مرتفع)، استخدم تدرجًا من لون واحد. للبيانات المتباينة (مثل، القيم فوق وتحت المتوسط)، استخدم لونين مختلفين يتباعدان من وسط محايد. للبيانات الفئوية (مثل، أنواع استخدام الأراضي)، استخدم ألوانًا مميزة وغير مرتبطة.", backContent: "تحقق من فهمك: أي نوع من أنظمة الألوان ستستخدمه لرسم خريطة لتغير درجات الحرارة، تظهر المناطق التي أصبحت أكثر دفئًا والمناطق التي أصبحت أكثر برودة؟" },
+                        { frontContent: "تعد أدوات مثل ColorBrewer (colorbrewer2.org) موارد لا تقدر بثمن. فهي توفر أنظمة ألوان مُعدة مسبقًا ومُختبرة وسليمة من الناحية الخرائطية، وحتى أنها تقوم بالتصفية للحصول على خيارات آمنة لعمى الألوان وصديقة للطباعة. وهذا يساعد على ضمان أن تكون خريطتك في متناول أوسع جمهور ممكن.", backContent: "توليف: يعد استخدام الموارد الراسخة مثل ColorBrewer ومطابقة نظام الألوان الخاص بك مع نوع بياناتك من المهارات الأساسية لعلم الخرائط الفعال." }
+                    ]
+                },
+                { id: 'u6p1', title: 'مختبر: ترميز البيانات', type: 'lab', description: 'مارس فن علم الخرائط. يعلمك المختبر عبر الإنترنت الترميز حسب الحجم، بينما يغطي مسار Pro ترميز ونشر الخرائط. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '30 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/symbolize-by-size/', pro: 'https://learn.arcgis.com/en/paths/symbolize-data-and-publish-maps/' } },
+                { id: 'u6l3', title: 'عناصر الخريطة الأساسية', type: 'lecture', description: 'تعرف على العناصر الإلزامية التي تحتاجها كل خريطة: العنوان، مفتاح الخريطة، مقياس الرسم، سهم الشمال، ومصادر البيانات.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 دقيقة' },
+                { id: 'u6p2', title: 'مختبر: إنشاء تخطيط الخريطة', type: 'lab', description: 'قم بتجميع خريطة نهائية. يغطي المختبر عبر الإنترنت أساسيات ArcGIS Online، بينما يركز مختبر Pro على إنشاء تخطيط طباعة عالي الجودة. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '35 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/cartographic-creations-arrange-a-map-layout/' } },
+                {
+                    id: 'u6q1',
+                    title: 'اختبار: علم الخرائط',
+                    type: 'quiz',
+                    description: 'تحقق من معرفتك بمبادئ وعناصر تصميم الخرائط.',
+                    duration: '5 دقائق',
+                    questions: [
+                      { text: 'أي عنصر من عناصر الخريطة يشرح معنى الرموز الموجودة على الخريطة؟', options: ['مقياس الرسم', 'سهم الشمال', 'العنوان', 'مفتاح الخريطة'], correctAnswer: 3, },
+                      { text: 'الخريطة التي تستخدم تظليل أو تلوين المناطق لتمثيل كمية تعرف باسم:', options: ['خريطة طبوغرافية', 'خريطة كوربليث', 'خريطة مرجعية', 'خريطة شوارع'], correctAnswer: 1, },
+                    ],
+                  },
+            ]
+          },
+          {
+            id: 'project',
+            title: 'المشروع النهائي',
+            description: 'طبق كل ما تعلمته في مشروع دورة شامل واحد من البداية إلى النهاية.',
+            modules: [
+              { id: 'cp1', title: 'أ: حدد سؤالاً', type: 'project', description: 'اختر موضوعًا وحدد سؤالًا جغرافيًا واضحًا تريد الإجابة عليه بمشروعك.', duration: '30 دقيقة' },
+              { id: 'cp2', title: 'ب: ابحث عن البيانات وحضرها', type: 'project', description: 'اجمع البيانات المكانية اللازمة، وتأكد من أن لديها الإسقاط الصحيح، وحضرها للتحليل.', duration: '60 دقيقة' },
+              { id: 'cp3', title: 'ج: قم بالتحليل', type: 'project', description: 'استخدم أدوات الاستعلام والمعالجة الجغرافية لتحليل بياناتك والإجابة على سؤال مشروعك.', duration: '45 دقيقة' },
+              { id: 'cp4', title: 'د: أنشئ الخريطة النهائية', type: 'project', description: 'صمم خريطة عالية الجودة توضح نتائجك بوضوح، كاملة مع جميع العناصر الخرائطية اللازمة.', duration: '60 دقيقة' },
+              { id: 'cp5', title: 'التسليم النهائي', type: 'final', description: 'قم بتسليم مشروعك الكامل بما في ذلك الخرائط والبيانات وملخص مكتوب لسير عملك ونتائجك.', duration: '15 دقيقة' },
+            ],
+          },
+        ];
+        
+        // --- I18N SETUP ---
+
+        const LanguageContext = createContext(undefined);
+
+        const LanguageProvider = ({ children }) => {
+          const [language, setLanguage] = useState('en');
+
+          useEffect(() => {
+            document.documentElement.lang = language;
+            document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+          }, [language]);
+
+          return (
+            <LanguageContext.Provider value={{ language, setLanguage }}>
+              {children}
+            </LanguageContext.Provider>
+          );
+        };
+
+        const useLanguage = () => {
+          const context = useContext(LanguageContext);
+          if (context === undefined) {
+            throw new Error('useLanguage must be used within a LanguageProvider');
+          }
+          return context;
+        };
+
+        const useTranslation = () => {
+          const { language } = useLanguage();
+
+          const t = (key) => {
+            return language === 'ar' ? arTranslations[key] : enTranslations[key];
+          };
+
+          const courseData = language === 'ar' ? arCourseData : enCourseData;
+          const glossaryData = language === 'ar' ? arGlossaryData : enGlossaryData;
+
+          return { t, language, courseData, glossaryData };
+        };
+
+        // --- ICONS ---
+        
+        const iconProps = {
+          className: "w-8 h-8 sm:w-10 sm:h-10",
+        };
+
+        const LectureIcon = () => (
+          <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        );
+
+        const QuizIcon = () => (
+          <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18l-3-3 3-3"></path>
+            <path d="M15 6l3 3-3 3"></path>
+            <path d="M10.5 13.5L8 16.5"></path>
+            <path d="M13.5 10.5L16 7.5"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+        );
+
+        const InteractionIcon = () => (
+          <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        );
+
+        const LabIcon = () => (
+          <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <line x1="9" y1="15" x2="15" y2="15"></line>
+          </svg>
+        );
+
+        const ProjectIcon = () => (
+          <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+          </svg>
+        );
+
+        const FinalIcon = () => (
+          <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        );
+
+        const ReadingFlashcardsIcon = () => (
+          <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        );
+
+        const FlashcardsIcon = () => (
+          <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="6" width="18" height="12" rx="2" ry="2" />
+            <path d="M6 6V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2" />
+          </svg>
+        );
+
+        const GlossaryIcon = ({className}) => (
+            <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                <path d="M12 8V6"></path>
+                <path d="M12 13v-2"></path>
+            </svg>
+        );
+
+        const TimeIcon = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        );
+
+        const LightbulbIcon = ({className}) => (
+            <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+        );
+
+        const ExternalLinkIcon = ({className}) => (
+            <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+        );
+
+        const ArcGisOnlineIcon = ({className}) => (
+            <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m0 18a9 9 0 009-9M3 12a9 9 0 019-9m-9 9h18m-9 9a9 9 0 00-9-9" />
+            </svg>
+        );
+
+        const ArcGisProIcon = ({className}) => (
+            <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+        );
+
+
+        // --- COMPONENTS ---
+
+        const LanguageSwitcher = ({ className }) => {
+            const { language, setLanguage } = useLanguage();
+            const commonClasses = 'px-4 py-2 font-bold rounded-md transition-colors';
+            const activeClasses = 'bg-cyan-500 text-white';
+            const inactiveClasses = 'bg-gray-700 text-gray-300 hover:bg-gray-600';
+
+            return (
+                <div className={`flex items-center gap-2 p-1 bg-gray-800 rounded-lg ${className}`}>
+                    <button onClick={() => setLanguage('en')} className={`${commonClasses} ${language === 'en' ? activeClasses : inactiveClasses}`}>
+                        EN
+                    </button>
+                    <button onClick={() => setLanguage('ar')} className={`${commonClasses} ${language === 'ar' ? activeClasses : inactiveClasses}`}>
+                        AR
+                    </button>
+                </div>
+            );
+        };
+
+        const LandingPage = ({ onStartCourse }) => {
+          const { t } = useTranslation();
+          return (
+            <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+              <LanguageSwitcher className="absolute top-4 end-4" />
+              <div className="bg-black bg-opacity-50 p-8 rounded-2xl shadow-2xl backdrop-blur-sm border border-gray-700 max-w-2xl">
+                <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 mb-4">
+                  {t('gisFundamentals')}
+                </h1>
+                <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-lg mx-auto">
+                  {t('landingPageDescription')}
+                </p>
+                <button
+                  onClick={onStartCourse}
+                  className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-emerald-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-cyan-500/50 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-cyan-300"
+                >
+                  {t('startLearning')}
+                </button>
+              </div>
+            </div>
+          );
+        };
+        
+        const GlossaryTerm = ({ term, definition }) => {
+          return (
+            <span className="relative group cursor-pointer">
+              <span className="text-cyan-400 border-b-2 border-cyan-400 border-dotted">
+                {term}
+              </span>
+              <div className="absolute bottom-full mb-3 w-72 bg-gray-900 border border-cyan-500 text-white text-sm rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20 -translate-x-1/2 start-1/2 text-start">
+                <h4 className="font-bold mb-1 text-base">{term}</h4>
+                <p className="text-gray-300">{definition}</p>
+                <div className="absolute top-full start-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-cyan-500"></div>
+              </div>
+            </span>
+          );
+        };
+
+        const ModuleNode = ({ module, status, onClick }) => {
+          const { glossaryData, t } = useTranslation();
+
+          const glossaryMap = useMemo(() => new Map(glossaryData.map(item => [item.term.toLowerCase(), item])), [glossaryData]);
+          const termsRegex = useMemo(() => new RegExp(`\\b(${glossaryData.map(g => g.term).join('|')})\\b`, 'gi'), [glossaryData]);
+
+          const parseAndHighlightText = (text) => {
+              if (!text) return text;
+              const parts = text.split(termsRegex);
+              return parts.map((part, index) => {
+                if (!part) return part;
+                const lowerPart = part.toLowerCase();
+                if (glossaryMap.has(lowerPart)) {
+                  const glossaryItem = glossaryMap.get(lowerPart);
+                  return <GlossaryTerm key={`${glossaryItem.term}-${index}`} term={part} definition={glossaryItem.definition} />;
+                }
+                return part;
+              });
+          };
+
+          const statusStyles = {
+            locked: 'bg-gray-700/50 border-gray-600 text-gray-500 cursor-not-allowed',
+            available: 'bg-gray-800 border-cyan-500 text-cyan-300 hover:bg-cyan-900/50 hover:border-cyan-300 transform hover:-translate-y-1',
+            completed: 'bg-emerald-800/50 border-emerald-500 text-emerald-300',
+          };
+
+          const getIcon = (type) => {
+            const types = {
+                lecture: <LectureIcon />,
+                quiz: <QuizIcon />,
+                interaction: <InteractionIcon />,
+                lab: <LabIcon />,
+                project: <ProjectIcon />,
+                final: <FinalIcon />,
+                'reading-flashcards': <ReadingFlashcardsIcon />,
+                flashcards: <FlashcardsIcon />,
+            }
+            return types[type] || null;
+          };
+
+          const baseClasses = "relative flex flex-col items-center justify-center w-28 h-28 sm:w-36 sm:h-36 p-3 rounded-lg border-2 text-center transition-all duration-300 shadow-md";
+          
+          return (
+            <div className="relative group flex-shrink-0">
+              <button
+                onClick={onClick}
+                disabled={status === 'locked'}
+                className={`${baseClasses} ${statusStyles[status]}`}
+              >
+                {getIcon(module.type)}
+                <span className="mt-2 text-xs sm:text-sm font-semibold leading-tight">{module.title}</span>
+                {module.duration && (
+                  <div className="text-xs text-gray-400 mt-1 flex items-center">
+                    <TimeIcon className="w-3 h-3 me-1" />
+                    {module.duration}
+                  </div>
+                )}
+                {status === 'completed' && (
+                  <div className="animate-checkmark absolute -top-2 -end-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white border-2 border-gray-800">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                )}
+              </button>
+              <div className="absolute bottom-full mb-2 w-64 p-3 bg-gray-900 border border-cyan-500 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 start-1/2 -translate-x-1/2 text-start">
+                <h4 className="font-bold text-base text-cyan-300">{module.title}</h4>
+                {module.duration && <p className="text-xs text-gray-500 mb-2 -mt-1">{t('estimatedTime')} {module.duration}</p>}
+                <p className="text-gray-300">{parseAndHighlightText(module.description)}</p>
+                <div className="absolute top-full start-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-cyan-500"></div>
+              </div>
+            </div>
+          );
+        };
+
+        const CourseTrack = ({ track, moduleStatuses, onModuleClick }) => {
+          return (
+            <section className="bg-gray-800/50 p-6 rounded-2xl border border-gray-700 shadow-lg group backdrop-blur-sm">
+              <div className="mb-6 text-start">
+                <h2 className="text-2xl sm:text-3xl font-bold text-cyan-300">{track.title}</h2>
+                <p className="text-gray-400 mt-1">{track.description}</p>
+              </div>
+              <div className="overflow-x-auto pb-4">
+                <div className="flex items-center min-w-max">
+                  {track.modules.map((module, index) => (
+                    <Fragment key={module.id}>
+                      <ModuleNode
+                        module={module}
+                        status={moduleStatuses[module.id]}
+                        onClick={() => onModuleClick(module, moduleStatuses[module.id])}
+                      />
+                      {index < track.modules.length - 1 && (
+                        <div className="flex-auto h-1 bg-gray-600 group-hover:bg-cyan-500 transition-colors duration-300 w-12 sm:w-20"></div>
+                      )}
+                    </Fragment>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        };
+        
+        const FlashcardViewer = ({ cards }) => {
+          const [currentIndex, setCurrentIndex] = useState(0);
+          const [isFlipped, setIsFlipped] = useState(false);
+          const { t } = useTranslation();
+
+          useEffect(() => {
+            setCurrentIndex(0);
+            setIsFlipped(false);
+          }, [cards]);
+
+          const handleFlip = () => setIsFlipped(prev => !prev);
+
+          const handleNext = () => {
+            if (currentIndex < cards.length - 1) {
+              setCurrentIndex(prev => prev + 1);
+              setIsFlipped(false);
+            }
+          };
+
+          const handlePrev = () => {
+            if (currentIndex > 0) {
+              setCurrentIndex(prev => prev - 1);
+              setIsFlipped(false);
+            }
+          };
+          
+          const currentCard = cards[currentIndex];
+
+          return (
+            <div className="w-full">
+              <div className="flashcard-container h-64 mb-4" onClick={handleFlip}>
+                <div className={`flashcard relative w-full h-full cursor-pointer ${isFlipped ? 'is-flipped' : ''}`}>
+                  <div className="flashcard-face absolute w-full h-full flex items-center justify-center p-6 text-center bg-gray-700 rounded-lg border-2 border-cyan-500">
+                    <h3 className="text-xl font-bold text-cyan-300">{currentCard.term}</h3>
+                  </div>
+                  <div className="flashcard-face flashcard-back absolute w-full h-full flex items-center justify-center p-6 text-center bg-gray-900 rounded-lg border-2 border-cyan-500">
+                    <p className="text-gray-300">{currentCard.definition}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                  disabled={currentIndex === 0}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                   {t('prev')}
+                </button>
+                <span className="text-gray-400 font-medium">{currentIndex + 1} / {cards.length}</span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                  disabled={currentIndex === cards.length - 1}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  {t('next')}
+                </button>
+              </div>
+              <p className="text-center text-sm text-gray-500 mt-4">{t('flipCard')}</p>
+            </div>
+          );
+        };
+        
+        const ReadingFlashcardViewer = ({ cards }) => {
+          const [currentIndex, setCurrentIndex] = useState(0);
+          const [isFlipped, setIsFlipped] = useState(false);
+          const [cardHeight, setCardHeight] = useState(undefined);
+          const { t } = useTranslation();
+
+          const frontEl = useRef(null);
+          const backEl = useRef(null);
+
+          useEffect(() => {
+            setCurrentIndex(0);
+            setIsFlipped(false);
+          }, [cards]);
+          
+          useEffect(() => {
+            const calculateHeight = () => {
+              if (frontEl.current && backEl.current) {
+                const frontHeight = frontEl.current.scrollHeight;
+                const backHeight = backEl.current.scrollHeight;
+                setCardHeight(Math.max(frontHeight, backHeight, 256));
+              }
+            };
+            const timer = setTimeout(calculateHeight, 50);
+            window.addEventListener('resize', calculateHeight);
+            return () => { clearTimeout(timer); window.removeEventListener('resize', calculateHeight); };
+          }, [currentIndex, cards]);
+
+          const handleFlip = () => setIsFlipped(prev => !prev);
+
+          const handleNext = () => {
+            if (currentIndex < cards.length - 1) {
+              if (isFlipped) {
+                setIsFlipped(false);
+                setTimeout(() => setCurrentIndex(prev => prev + 1), 300);
+              } else {
+                setCurrentIndex(prev => prev + 1);
+              }
+            }
+          };
+
+          const handlePrev = () => {
+            if (currentIndex > 0) {
+              if (isFlipped) {
+                setIsFlipped(false);
+                setTimeout(() => setCurrentIndex(prev => prev - 1), 300);
+              } else {
+                setCurrentIndex(prev => prev - 1);
+              }
+            }
+          };
+          
+          const currentCard = cards[currentIndex];
+
+          return (
+            <div className="w-full">
+              <div 
+                className="flashcard-container mb-4"
+                style={{ height: cardHeight ? `${cardHeight}px` : '16rem', transition: 'height 0.3s ease-in-out' }}
+              >
+                <div className={`flashcard relative w-full h-full cursor-pointer ${isFlipped ? 'is-flipped' : ''}`} onClick={handleFlip}>
+                  <div ref={frontEl} className="flashcard-face absolute w-full h-full flex flex-col p-6 text-start bg-gray-100 text-gray-800 rounded-lg border-2 border-gray-300 shadow-lg font-serif overflow-y-auto">
+                    <p className="flex-grow text-lg leading-relaxed">{currentCard.frontContent}</p>
+                    <div className="mt-auto pt-4 text-xs text-gray-500 flex items-center justify-end">
+                        <span className="italic">{t('flipCard')}</span>
+                        <svg className="h-5 w-5 ms-1 rtl:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                        <svg className="h-5 w-5 ms-1 ltr:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" /></svg>
+                    </div>
+                  </div>
+                  <div ref={backEl} className="flashcard-face flashcard-back absolute w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gray-700 rounded-lg border-2 border-cyan-500 shadow-lg">
+                    <LightbulbIcon className="w-10 h-10 text-yellow-300 mb-4" />
+                    <p className="text-lg text-cyan-200 font-semibold italic">{currentCard.backContent}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <button onClick={handlePrev} disabled={currentIndex === 0} className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed">
+                   {t('prev')}
+                </button>
+                <span className="text-gray-400 font-medium">{currentIndex + 1} / {cards.length}</span>
+                <button onClick={handleNext} disabled={currentIndex === cards.length - 1} className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed">
+                  {t('next')}
+                </button>
+              </div>
+            </div>
+          );
+        };
+        
+        const Highlight = ({ text, highlight }) => {
+          if (!highlight.trim()) return <>{text}</>;
+          const regex = new RegExp(`(${highlight})`, 'gi');
+          const parts = text.split(regex);
+          return (
+            <>
+              {parts.map((part, i) =>
+                part.toLowerCase() === highlight.toLowerCase() ? (
+                  <mark key={i} className="bg-yellow-500/30 text-yellow-300 px-1 rounded-sm bg-opacity-50">
+                    {part}
+                  </mark>
+                ) : (
+                  part
+                )
+              )}
+            </>
+          );
+        };
+
+        const GlossaryModal = ({ glossary, onClose }) => {
+          const { t } = useTranslation();
+          const [searchTerm, setSearchTerm] = useState('');
+          const [openTerms, setOpenTerms] = useState(new Set());
+
+          const toggleTerm = (term) => {
+            setOpenTerms(prev => {
+              const newSet = new Set(prev);
+              if (newSet.has(term)) newSet.delete(term);
+              else newSet.add(term);
+              return newSet;
+            });
+          };
+
+          const filteredGlossary = useMemo(() => {
+            if (!searchTerm) return glossary;
+            return glossary.filter(item => 
+              item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.definition.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+          }, [searchTerm, glossary]);
+
+          return (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={onClose}>
+              <div 
+                className="bg-gray-800 text-white rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-700 flex flex-col text-start"
+                onClick={e => e.stopPropagation()}
+                style={{ height: 'min(80vh, 800px)'}}
+              >
+                <header className="p-6 flex items-start justify-between border-b border-gray-700 sticky top-0 bg-gray-800 rounded-t-2xl">
+                  <div>
+                    <h2 className="text-2xl font-bold text-cyan-300">{t('glossaryTitle')}</h2>
+                    <p className="text-gray-400">{t('glossaryDescription')}</p>
+                  </div>
+                  <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors text-3xl leading-none">&times;</button>
+                </header>
+                <div className="p-6 border-b border-gray-700">
+                    <input
+                        type="text"
+                        placeholder={t('glossarySearchPlaceholder')}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+                </div>
+                <main className="p-6 overflow-y-auto flex-grow">
+                  <div className="space-y-2">
+                    {filteredGlossary.length > 0 ? (
+                      filteredGlossary.map((item, index) => {
+                        const isOpen = openTerms.has(item.term);
+                        return (
+                          <div key={index} className="border-b border-gray-700">
+                            <button
+                              onClick={() => toggleTerm(item.term)}
+                              className="w-full flex justify-between items-center text-start py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-md"
+                            >
+                              <h3 className="text-lg font-bold text-cyan-400">
+                                <Highlight text={item.term} highlight={searchTerm} />
+                              </h3>
+                              <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 text-gray-400 transition-transform duration-300 transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-48 mt-1' : 'max-h-0'}`}>
+                                <p className="text-gray-300 pt-1 pb-3 pe-4">
+                                   <Highlight text={item.definition} highlight={searchTerm} />
+                                </p>
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                        <p className="text-gray-400 text-center py-8">{t('glossaryNoTerms')}</p>
+                    )}
+                  </div>
+                </main>
+              </div>
+            </div>
+          );
+        };
+
+        const ModuleModal = ({ module, status, onClose, onComplete, nextModule, onGoToNext, quizProgress, onUpdateQuizProgress }) => {
+          const { t, glossaryData } = useTranslation();
+          
+          const glossaryMap = useMemo(() => new Map(glossaryData.map(item => [item.term.toLowerCase(), item])), [glossaryData]);
+          const termsRegex = useMemo(() => new RegExp(`\\b(${glossaryData.map(g => g.term).join('|')})\\b`, 'gi'), [glossaryData]);
+
+          const parseAndHighlightText = (text) => {
+              if (!text) return text;
+              const parts = text.split(termsRegex);
+              return parts.map((part, index) => {
+                if (!part) return part;
+                const lowerPart = part.toLowerCase();
+                if (glossaryMap.has(lowerPart)) {
+                  const glossaryItem = glossaryMap.get(lowerPart);
+                  return <GlossaryTerm key={`${glossaryItem.term}-${index}`} term={part} definition={glossaryItem.definition} />;
+                }
+                return part;
+              });
+          };
+
+          const isQuiz = module.type === 'quiz' && module.questions && module.questions.length > 0;
+          const isFlashcards = module.type === 'flashcards' && module.flashcards && module.flashcards.length > 0;
+          const isReadingFlashcards = module.type === 'reading-flashcards' && module.readingCards && module.readingCards.length > 0;
+          const isExternalLab = module.type === 'lab' && module.externalUrls && (module.externalUrls.online || module.externalUrls.pro);
+
+          const [selectedAnswers, setSelectedAnswers] = useState({});
+          const [submitted, setSubmitted] = useState(false);
+          const [score, setScore] = useState(0);
+
+          useEffect(() => {
+            const currentProgress = quizProgress || { selectedAnswers: {}, submitted: false };
+            setSelectedAnswers(currentProgress.selectedAnswers);
+            setSubmitted(currentProgress.submitted);
+            if (currentProgress.submitted && module.questions) {
+              let correctCount = 0;
+              module.questions.forEach((q, index) => { if (currentProgress.selectedAnswers[index] === q.correctAnswer) correctCount++; });
+              setScore(correctCount);
+            } else {
+              setScore(0);
+            }
+          }, [module.id, quizProgress, module.questions]);
+
+          const handleSelectAnswer = (questionIndex, optionIndex) => {
+            if (submitted) return;
+            setSelectedAnswers(prev => ({ ...prev, [questionIndex]: optionIndex }));
+          };
+
+          const handleSubmit = () => {
+            if (!module.questions) return;
+            let correctCount = 0;
+            module.questions.forEach((q, index) => { if (selectedAnswers[index] === q.correctAnswer) correctCount++; });
+            setScore(correctCount);
+            setSubmitted(true);
+          };
+
+          const allQuestionsAnswered = module.questions ? Object.keys(selectedAnswers).length === module.questions.length : false;
+
+          const handleCloseAndSave = () => {
+            if (isQuiz) {
+              onUpdateQuizProgress(module.id, { selectedAnswers, submitted });
+            }
+            onClose();
+          };
+
+          const getIcon = (type) => {
+            const types = {
+                lecture: <LectureIcon />, quiz: <QuizIcon />, interaction: <InteractionIcon />,
+                lab: <LabIcon />, project: <ProjectIcon />, final: <FinalIcon />,
+                'reading-flashcards': <ReadingFlashcardsIcon />, flashcards: <FlashcardsIcon />,
+            }
+            return types[type] || null;
+          };
+
+          return (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={handleCloseAndSave}>
+              <div className="bg-gray-800 text-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-700 flex flex-col text-start" onClick={e => e.stopPropagation()}>
+                <header className="p-6 flex items-start justify-between border-b border-gray-700">
+                  <div className="flex items-center gap-4">
+                    <div className="text-cyan-400">{getIcon(module.type)}</div>
+                    <div>
+                      <h2 className="text-2xl font-bold">{module.title}</h2>
+                      <div className="flex items-center gap-x-4 text-sm mt-1">
+                        {status === 'completed' && <span className="font-medium bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded-md">{t('completed')}</span>}
+                        {module.duration && <span className="text-gray-400 flex items-center gap-1.5"><TimeIcon className="w-4 h-4" />{module.duration}</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <button onClick={handleCloseAndSave} className="text-gray-400 hover:text-white transition-colors text-3xl leading-none">&times;</button>
+                </header>
+                <main className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+                  <p className="text-gray-300 mb-4">{parseAndHighlightText(module.description)}</p>
+
+                  {module.type === 'lecture' && (
+                    <div className="relative w-full overflow-hidden mb-4" style={{ paddingTop: '56.25%' }}>
+                      {/* Using the user's provided iframe structure to ensure compatibility with the video source */}
+                      <iframe className="absolute top-0 left-0 w-full h-full rounded-lg" src="https://www.youtube.com/embed/1weeI3Ey9wM" title="Welcome To GIS.mp4" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
+                    </div>
+                  )}
+
+                  {isExternalLab && (
+                    <div className="my-6 space-y-4">
+                      {module.externalUrls?.online && (
+                          <a href={module.externalUrls.online} target="_blank" rel="noopener noreferrer" className="group block p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-gray-600 hover:border-cyan-500 transition-all duration-300 no-underline">
+                              <div className="flex items-center gap-4">
+                                  <ArcGisOnlineIcon className="w-10 h-10 text-cyan-400 flex-shrink-0" />
+                                  <div>
+                                      <h4 className="font-bold text-lg text-white flex items-center group-hover:text-cyan-300 transition-colors">{t('startLabOnline')} <ExternalLinkIcon className="w-4 h-4 ms-2 opacity-70 group-hover:opacity-100" /></h4>
+                                      <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">{t('onlineDescription')}</p>
+                                  </div>
+                              </div>
+                          </a>
+                      )}
+                      {module.externalUrls?.pro && (
+                          <a href={module.externalUrls.pro} target="_blank" rel="noopener noreferrer" className="group block p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-gray-600 hover:border-cyan-500 transition-all duration-300 no-underline">
+                              <div className="flex items-center gap-4">
+                                  <ArcGisProIcon className="w-10 h-10 text-cyan-400 flex-shrink-0" />
+                                  <div>
+                                      <h4 className="font-bold text-lg text-white flex items-center group-hover:text-cyan-300 transition-colors">{t('startLabPro')} <ExternalLinkIcon className="w-4 h-4 ms-2 opacity-70 group-hover:opacity-100" /></h4>
+                                      <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">{t('proDescription')}</p>
+                                  </div>
+                              </div>
+                          </a>
+                      )}
+                    </div>
+                  )}
+                  
+                  {isFlashcards && <FlashcardViewer cards={module.flashcards} />}
+                  {isReadingFlashcards && <ReadingFlashcardViewer cards={module.readingCards} />}
+
+                  {isQuiz && (
+                    <div className="space-y-6">
+                      {module.questions?.map((question, qIndex) => (
+                        <div key={qIndex}>
+                          <p className="font-semibold text-lg text-gray-100 mb-3">{qIndex + 1}. {parseAndHighlightText(question.text)}</p>
+                          <div className="space-y-2">
+                            {question.options.map((option, oIndex) => {
+                              const isSelected = selectedAnswers[qIndex] === oIndex;
+                              const isCorrect = question.correctAnswer === oIndex;
+                              let buttonClass = 'w-full text-start p-3 rounded-lg border-2 transition-colors duration-200 ';
+                              if (submitted) {
+                                if (isCorrect) buttonClass += 'bg-emerald-500/30 border-emerald-500 text-white cursor-default';
+                                else if (isSelected && !isCorrect) buttonClass += 'bg-red-500/30 border-red-500 text-white cursor-default';
+                                else buttonClass += 'bg-gray-700 border-gray-600 text-gray-300 cursor-default';
+                              } else {
+                                buttonClass += isSelected ? 'bg-cyan-600 border-cyan-400 text-white' : 'bg-gray-700 border-gray-600 hover:bg-gray-600/50 hover:border-gray-500 text-gray-300';
+                              }
+                              return (<button key={oIndex} onClick={() => handleSelectAnswer(qIndex, oIndex)} disabled={submitted} className={buttonClass}>{option}</button>);
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                      {submitted ? (
+                        <div className="mt-6 p-4 text-center bg-gray-900/50 rounded-lg"><h3 className="text-xl font-bold text-cyan-300">{t('yourScore')}: {score} / {module.questions?.length}</h3></div>
+                      ) : (
+                        <div className="mt-6 flex justify-end"><button onClick={handleSubmit} disabled={!allQuestionsAnswered} className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">{t('submitAnswers')}</button></div>
+                      )}
+                    </div>
+                  )}
+                </main>
+                <footer className="p-6 flex justify-end gap-4 bg-gray-800/50 rounded-b-2xl border-t border-gray-700">
+                  <button onClick={handleCloseAndSave} className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors">{status !== 'completed' ? t('backToDashboard') : t('close')}</button>
+                  {status !== 'completed' ? (
+                    <button onClick={() => onComplete(module.id)} disabled={(isQuiz && !submitted)} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">{t('markAsComplete')}</button>
+                  ) : (
+                    nextModule && (<button onClick={() => onGoToNext(nextModule)} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-colors flex items-center gap-2">{t('nextModule')} <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg></button>)
+                  )}
+                </footer>
+              </div>
+            </div>
+          );
+        };
+        
+        const CourseDashboard = () => {
+          const { t, courseData, glossaryData, language } = useTranslation();
+          const [activeModule, setActiveModule] = useState(null);
+          const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
+          const [searchTerm, setSearchTerm] = useState('');
+          const [quizProgress, setQuizProgress] = useState({});
+
+          const initialStatuses = useMemo(() => {
+            const statuses = {};
+            courseData.forEach((track, trackIndex) => {
+              track.modules.forEach((module, moduleIndex) => {
+                statuses[module.id] = (trackIndex === 0 && moduleIndex === 0) ? 'available' : 'locked';
+              });
+            });
+            return statuses;
+          }, [courseData]);
+
+          const [moduleStatuses, setModuleStatuses] = useState(initialStatuses);
+          
+          useEffect(() => {
+            setModuleStatuses(initialStatuses);
+            setQuizProgress({});
+          }, [language, initialStatuses]);
+
+          const filteredCourseData = useMemo(() => {
+            if (!searchTerm.trim()) return courseData;
+            const lowercasedFilter = searchTerm.toLowerCase();
+            return courseData
+              .map(track => ({ ...track, modules: track.modules.filter(module => module.title.toLowerCase().includes(lowercasedFilter) || module.description.toLowerCase().includes(lowercasedFilter)) }))
+              .filter(track => track.modules.length > 0);
+          }, [searchTerm, courseData]);
+
+          const nextModule = useMemo(() => {
+            if (!activeModule) return null;
+            let activeTrackIndex = -1, activeModuleIndex = -1;
+            for (let i = 0; i < courseData.length; i++) {
+              const moduleIndex = courseData[i].modules.findIndex(m => m.id === activeModule.id);
+              if (moduleIndex !== -1) { activeTrackIndex = i; activeModuleIndex = moduleIndex; break; }
+            }
+            if (activeTrackIndex !== -1) {
+              const currentTrack = courseData[activeTrackIndex];
+              if (activeModuleIndex < currentTrack.modules.length - 1) return currentTrack.modules[activeModuleIndex + 1];
+              else if (activeTrackIndex < courseData.length - 1) {
+                const nextTrack = courseData[activeTrackIndex + 1];
+                if (nextTrack && nextTrack.modules.length > 0) return nextTrack.modules[0];
+              }
+            }
+            return null;
+          }, [activeModule, courseData]);
+          
+          const handleUpdateQuizProgress = (moduleId, progress) => setQuizProgress(prev => ({ ...prev, [moduleId]: progress }));
+          const handleModuleClick = (module, status) => { if (status !== 'locked') setActiveModule(module); };
+          const handleCloseModal = () => setActiveModule(null);
+          const handleGoToNext = (module) => { if (module && moduleStatuses[module.id] !== 'locked') setActiveModule(module); };
+
+          const handleCompleteModule = (moduleId) => {
+            setModuleStatuses(currentStatuses => {
+              const newStatuses = { ...currentStatuses, [moduleId]: 'completed' };
+              let completedTrackIndex = -1, completedModuleIndex = -1;
+              for (let i = 0; i < courseData.length; i++) {
+                const moduleIndex = courseData[i].modules.findIndex(m => m.id === moduleId);
+                if (moduleIndex !== -1) { completedTrackIndex = i; completedModuleIndex = moduleIndex; break; }
+              }
+              if (completedTrackIndex !== -1) {
+                const currentTrack = courseData[completedTrackIndex];
+                if (completedModuleIndex < currentTrack.modules.length - 1) {
+                  const nextModuleToUnlock = currentTrack.modules[completedModuleIndex + 1];
+                  if (newStatuses[nextModuleToUnlock.id] === 'locked') newStatuses[nextModuleToUnlock.id] = 'available';
+                } else if (completedTrackIndex < courseData.length - 1) {
+                  const nextTrack = courseData[completedTrackIndex + 1];
+                  if (nextTrack && nextTrack.modules.length > 0) {
+                    const nextModuleToUnlock = nextTrack.modules[0];
+                    if (newStatuses[nextModuleToUnlock.id] === 'locked') newStatuses[nextModuleToUnlock.id] = 'available';
+                  }
+                }
+              }
+              return newStatuses;
+            });
+          };
+
+          return (
+            <div className="container mx-auto p-4 sm:p-8">
+              <header className="text-center mb-12 relative">
+                <div className="absolute top-0 start-0"><LanguageSwitcher /></div>
+                <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500">{t('courseDashboard')}</h1>
+                <p className="text-gray-400 mt-2">{t('courseProgressDescription')}</p>
+                <button onClick={() => setIsGlossaryOpen(true)} className="absolute top-0 end-0 mt-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-700 border border-gray-600 text-cyan-300 font-semibold rounded-lg transition-colors flex items-center gap-2">
+                    <GlossaryIcon className="w-5 h-5" />
+                    <span className="hidden sm:inline">{t('glossary')}</span>
+                </button>
+                <div className="mt-8 max-w-lg mx-auto">
+                  <input type="text" placeholder={t('searchPlaceholder')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full px-4 py-3 bg-gray-700/50 border-2 border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all text-white placeholder-gray-400" />
+                </div>
+              </header>
+              <div className="space-y-12">
+                {filteredCourseData.length > 0 ? (
+                  filteredCourseData.map(track => <CourseTrack key={track.id} track={track} moduleStatuses={moduleStatuses} onModuleClick={handleModuleClick} />)
+                ) : (
+                  <div className="text-center py-16"><h3 className="text-2xl font-bold text-gray-300">{t('noModulesFound')}</h3><p className="text-gray-400 mt-2">{t('adjustSearch')}</p></div>
+                )}
+              </div>
+              {activeModule && <ModuleModal module={activeModule} status={moduleStatuses[activeModule.id]} onClose={handleCloseModal} onComplete={handleCompleteModule} nextModule={nextModule} onGoToNext={handleGoToNext} quizProgress={quizProgress[activeModule.id]} onUpdateQuizProgress={handleUpdateQuizProgress} />}
+              {isGlossaryOpen && <GlossaryModal glossary={glossaryData} onClose={() => setIsGlossaryOpen(false)} />}
+            </div>
+          );
+        };
+        
+        // --- APP ---
+
+        const App = () => {
+          const [courseStarted, setCourseStarted] = useState(false);
+          const handleStartCourse = () => setCourseStarted(true);
+
+          return (
+            <main className="bg-gray-900 text-white min-h-screen antialiased">
+              <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="absolute top-0 left-0 w-full h-full object-cover opacity-10 z-0"
+              >
+                <source src="https://static.videezy.com/system/resources/previews/000/044/479/original/P1200022.mp4" type="video/mp4" />
+              </video>
+              <div className="relative z-10">
+                {courseStarted ? <CourseDashboard /> : <LandingPage onStartCourse={handleStartCourse} />}
+              </div>
+            </main>
+          );
+        };
+
+        // --- RENDER ---
+        
+        const rootElement = document.getElementById('root');
+        if (!rootElement) {
+          throw new Error("Could not find root element to mount to");
+        }
+
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(
+          <React.StrictMode>
+            <LanguageProvider>
+              <App />
+            </LanguageProvider>
+          </React.StrictMode>
+        );
+      })();
+    </script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
