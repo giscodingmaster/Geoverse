@@ -196,6 +196,8 @@
           { term: 'الربط (Join)', definition: 'عملية تجمع بين البيانات من جدولين بناءً على حقل أو سمة مشتركة، وغالبًا ما تستخدم لإلحاق بيانات السمات بالمعالم الجغرافية في طبقة.'},
           { term: 'البيانات الوصفية (Metadata)', definition: 'بيانات توفر معلومات حول بيانات أخرى. في نظم المعلومات الجغرافية، تصف البيانات الوصفية محتوى وجودة وحالة وأصل وخصائص أخرى لمجموعة البيانات.'},
         ];
+        
+        const YOUTUBE_VIDEO_URL = 'https://www.youtube.com/embed/1weeI3Ey9wM'; // Default/placeholder video
 
         const enCourseData = [
           {
@@ -203,7 +205,7 @@
             title: 'Unit 1: The Fundamentals',
             description: 'Start your journey by understanding what GIS is, why it matters, and how to think spatially.',
             modules: [
-              { id: 'u1l1', title: 'Welcome to GIS', type: 'lecture', description: 'An introduction to the course, its goals, and the exciting world of Geographic Information Systems.', videoUrl: 'https://www.youtube.com/embed/LpQ21gI3Pls', duration: '2 min' },
+              { id: 'u1l1', title: 'Welcome to GIS', type: 'lecture', description: 'An introduction to the course, its goals, and the exciting world of Geographic Information Systems.', videoUrl: 'https://www.youtube.com/embed/1weeI3Ey9wM', duration: '2 min' },
               { 
                 id: 'u1r1', 
                 title: 'Reading: Thinking Spatially', 
@@ -217,7 +219,7 @@
                   { frontContent: "In GIS, we use both absolute location (a precise coordinate) and relative location (a place's position in relation to others). Absolute location gives us the data to put on a map, while understanding relative location helps us perform meaningful analysis, like finding all hospitals within 5 miles of a major highway.", backContent: "Synthesis: GIS combines precise absolute locations with the analytical power of understanding relative locations, patterns, and scale to solve complex problems." }
                 ]
               },
-              { id: 'u1l2', title: 'Components of a GIS', type: 'lecture', description: 'Discover the five key components of a GIS: Hardware, Software, Data, People, and Methods.', videoUrl: 'https://www.youtube.com/embed/UPtVgeJ4s8s', duration: '12 min' },
+              { id: 'u1l2', title: 'Components of a GIS', type: 'lecture', description: 'Discover the five key components of a GIS: Hardware, Software, Data, People, and Methods.', videoUrl: 'https://www.youtube.com/embed/WsIHVRdYfAw', duration: '12 min' },
               { 
                 id: 'u1i1', 
                 title: 'Flashcards: GIS in the Real World', 
@@ -258,12 +260,13 @@
               },
             ],
           },
+          // ... (All other units with YOUTUBE_VIDEO_URL)
           {
             id: 'unit2',
             title: 'Unit 2: The Nature of Spatial Data',
             description: 'Learn how we represent the real world digitally using the two fundamental GIS data models: vector and raster.',
             modules: [
-              { id: 'u2l1', title: 'The Vector Data Model', type: 'lecture', description: 'A deep dive into points, lines, and polygons, and how they represent discrete features in the world.', videoUrl: 'https://www.youtube.com/embed/JpRAuGqqA2I', duration: '15 min' },
+              { id: 'u2l1', title: 'The Vector Data Model', type: 'lecture', description: 'A deep dive into points, lines, and polygons, and how they represent discrete features in the world.', videoUrl: 'https://www.youtube.com/embed/1W9pltaOcTM', duration: '15 min' },
               { 
                 id: 'u2r1', 
                 title: 'Reading: Understanding Attributes', 
@@ -278,7 +281,7 @@
                 ]
               },
               { id: 'u2p1', title: 'Lab: Exploring Vector Data', type: 'lab', description: 'Use GIS software to inspect a dataset, view its contents, and get acquainted with the ArcGIS interface.', duration: '25 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/' } },
-              { id: 'u2l2', title: 'The Raster Data Model', type: 'lecture', description: 'Learn how continuous phenomena like elevation and temperature are represented using a grid of cells.', videoUrl: 'https://www.youtube.com/embed/5a8CRbA-g4s', duration: '15 min' },
+              { id: 'u2l2', title: 'The Raster Data Model', type: 'lecture', description: 'Learn how continuous phenomena like elevation and temperature are represented using a grid of cells.', videoUrl: 'https://www.youtube.com/embed/FD_mFn27XwY', duration: '15 min' },
               { 
                 id: 'u2r2', 
                 title: 'Reading: Pixels and Values', 
@@ -326,8 +329,8 @@
             title: 'Unit 3: Where in the World?',
             description: "Grasp the critical concepts of coordinate systems, datums, and map projections that allow us to accurately locate data on the Earth's surface.",
             modules: [
-              { id: 'u3l1', title: 'The Shape of the Earth', type: 'lecture', description: 'Learn about Geoids, Ellipsoids, and Datums, the foundational models for defining location on Earth.', videoUrl: 'https://www.youtube.com/embed/T4_z_v-9vC4', duration: '10 min' },
-              { id: 'u3l2', title: 'Geographic Coordinate Systems', type: 'lecture', description: 'Understand latitude and longitude and how this angular system pinpoints any location on the globe.', videoUrl: 'https://www.youtube.com/embed/--zY-201-tk', duration: '12 min' },
+              { id: 'u3l1', title: 'The Shape of the Earth', type: 'lecture', description: 'Learn about Geoids, Ellipsoids, and Datums, the foundational models for defining location on Earth.', videoUrl: 'https://www.youtube.com/embed/U0Ho3adTI2w', duration: '10 min' },
+              { id: 'u3l2', title: 'Geographic Coordinate Systems', type: 'lecture', description: 'Understand latitude and longitude and how this angular system pinpoints any location on the globe.', videoUrl: 'https://www.youtube.com/embed/cJwa-6qwCT4', duration: '12 min' },
               { 
                 id: 'u3r1', 
                 title: 'Reading: Projections Explained', 
@@ -341,7 +344,7 @@
                   { frontContent: "The choice of projection is critical. An equal-area projection is essential for a thematic map showing population density, while a conformal projection is used for navigation charts where angles are important. An equidistant projection might be chosen if measuring distances from a central point is the main goal.", backContent: "Synthesis: The 'best' projection depends entirely on the purpose of the map, the location and extent of the area being mapped, and the analysis being performed." }
                 ]
               },
-              { id: 'u3l3', title: 'Projected Coordinate Systems', type: 'lecture', description: 'Discover how we "unroll" the 3D Earth onto a 2D flat map using common projections like UTM and State Plane.', videoUrl: 'https://www.youtube.com/embed/mIFPI-bUn7Y', duration: '12 min' },
+              { id: 'u3l3', title: 'Projected Coordinate Systems', type: 'lecture', description: 'Discover how we "unroll" the 3D Earth onto a 2D flat map using common projections like UTM and State Plane.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 min' },
               { 
                 id: 'u3i1', 
                 title: 'Flashcards: Projection Concepts', 
@@ -376,7 +379,7 @@
             title: 'Unit 4: Acquiring Spatial Data',
             description: 'Learn where GIS data comes from, from collecting it yourself to find reliable existing datasets.',
             modules: [
-                { id: 'u4l1', title: 'Data Sources', type: 'lecture', description: 'An overview of the primary and secondary sources of spatial data, including satellites, aerial photography, and GPS.', videoUrl: 'https://www.youtube.com/embed/y2SA-O7-1oY', duration: '10 min' },
+                { id: 'u4l1', title: 'Data Sources', type: 'lecture', description: 'An overview of the primary and secondary sources of spatial data, including satellites, aerial photography, and GPS.', videoUrl: 'https://www.youtube.com/embed/DWaQH6_Nk2I', duration: '10 min' },
                 { 
                     id: 'u4r1', 
                     title: 'Reading: Data Quality & Metadata', 
@@ -390,7 +393,7 @@
                       { frontContent: "Imagine finding a dataset called 'roads.shp'. Without metadata, you don't know if it includes all roads or just highways, its positional accuracy, or when it was last updated. The data is unusable for any serious analysis like emergency response routing.", backContent: "Synthesis: Metadata provides the context that turns raw data into reliable information, allowing you to assess its quality and fitness for your purpose." }
                     ]
                 },
-                { id: 'u4l2', title: 'Heads-Up Digitizing', type: 'lecture', description: 'Understand the process of creating new vector data by tracing features from a base map or image.', videoUrl: 'https://www.youtube.com/embed/G6jY2-3-syI', duration: '8 min' },
+                { id: 'u4l2', title: 'Heads-Up Digitizing', type: 'lecture', description: 'Understand the process of creating new vector data by tracing features from a base map or image.', videoUrl: 'https://www.youtube.com/embed/sdNRfGocWss', duration: '8 min' },
                 { id: 'u4p1', title: 'Lab: Digitizing Features', type: 'lab', description: 'Gain hands-on experience by creating new vector features. The online lab uses the Community Maps Editor, while the Pro lab teaches you to copy features.', duration: '30 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/digitize-your-neighborhood-with-arcgis-community-maps-editor/', pro: 'https://learn.arcgis.com/en/projects/copy-features-between-layers/' } },
                 { 
                     id: 'u4r2', 
@@ -423,11 +426,11 @@
             title: 'Unit 5: The GIS Toolkit',
             description: 'Begin to unlock the power of GIS by learning fundamental analysis techniques, from asking questions of your data to using core geoprocessing tools.',
             modules: [
-                { id: 'u5l1', title: 'Attribute Queries', type: 'lecture', description: 'Learn how to select features based on their attribute data using structured queries (SQL).', videoUrl: 'https://www.youtube.com/embed/iM9-3f0f5M0', duration: '12 min' },
+                { id: 'u5l1', title: 'Attribute Queries', type: 'lecture', description: 'Learn how to select features based on their attribute data using structured queries (SQL).', videoUrl: 'https://www.youtube.com/embed/w3pXbHrbsDg', duration: '12 min' },
                 { id: 'u5p1', title: 'Lab: Select By Attributes', type: 'lab', description: 'Ask questions of your data. The online lab introduces the Map Viewer, while the Pro lab focuses on selecting and extracting a subset of data.', duration: '25 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-map-viewer/', pro: 'https://learn.arcgis.com/en/projects/select-and-extract-a-subset-of-features/' } },
-                { id: 'u5l2', title: 'Spatial Queries', type: 'lecture', description: 'Learn how to select features based on their spatial relationship to other features (e.g., intersect, contain, are within a distance of).', videoUrl: 'https://www.youtube.com/embed/k9AtwI2aSAQ', duration: '12 min' },
+                { id: 'u5l2', title: 'Spatial Queries', type: 'lecture', description: 'Learn how to select features based on their spatial relationship to other features (e.g., intersect, contain, are within a distance of).', videoUrl: 'https://www.youtube.com/embed/G3AknRKTZRI', duration: '12 min' },
                 { id: 'u5p2', title: 'Lab: Select By Location', type: 'lab', description: 'Find features based on their spatial relationships. The online lab introduces the Map Viewer, while the Pro lab focuses on the selecting and extracting features.', duration: '25 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-map-viewer/', pro: 'https://learn.arcgis.com/en/projects/select-and-extract-a-subset-of-features/' } },
-                { id: 'u5l3', title: 'Introduction to Geoprocessing', type: 'lecture', description: 'Understand the concept of using tools to manipulate datasets, focusing on core vector analysis tools like Buffer and Clip.', videoUrl: 'https://www.youtube.com/embed/2_O3a2-gTz-c', duration: '15 min' },
+                { id: 'u5l3', title: 'Introduction to Geoprocessing', type: 'lecture', description: 'Understand the concept of using tools to manipulate datasets, focusing on core vector analysis tools like Buffer and Clip.', videoUrl: 'https://www.youtube.com/embed/o2pGhWdkV7s', duration: '15 min' },
                 { 
                     id: 'u5i1', 
                     title: 'Flashcards: Geoprocessing Tools', 
@@ -462,8 +465,8 @@
             title: 'Unit 6: The Art of the Map',
             description: 'Learn the principles of cartography to effectively communicate your data and analysis by creating clear, compelling, and well-designed maps.',
             modules: [
-                { id: 'u6l1', title: 'Principles of Cartography', type: 'lecture', description: 'Discover the core principles of map design, including visual hierarchy, balance, and clarity.', videoUrl: 'https://www.youtube.com/embed/5-pE8t-zL7k', duration: '10 min' },
-                { id: 'u6l2', title: 'Symbology and Classification', type: 'lecture', description: 'Learn how to symbolize data effectively using colors, shapes, and sizes, and how to classify numerical data using methods like Natural Breaks and Equal Interval.', videoUrl: 'https://www.youtube.com/embed/w7cAfb-cqZ4', duration: '15 min' },
+                { id: 'u6l1', title: 'Principles of Cartography', type: 'lecture', description: 'Discover the core principles of map design, including visual hierarchy, balance, and clarity.', videoUrl: YOUTUBE_VIDEO_URL, duration: '10 min' },
+                { id: 'u6l2', title: 'Symbology and Classification', type: 'lecture', description: 'Learn how to symbolize data effectively using colors, shapes, and sizes, and how to classify numerical data using methods like Natural Breaks and Equal Interval.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 min' },
                 { 
                     id: 'u6r1', 
                     title: 'Reading: Choosing Colors', 
@@ -477,7 +480,7 @@
                     ]
                 },
                 { id: 'u6p1', title: 'Lab: Symbolizing Data', type: 'lab', description: 'Practice the art of cartography. The online lab teaches symbolizing by size, while the Pro path covers symbolizing and publishing maps.', duration: '30 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/symbolize-by-size/', pro: 'https://learn.arcgis.com/en/paths/symbolize-data-and-publish-maps/' } },
-                { id: 'u6l3', title: 'Essential Map Elements', type: 'lecture', description: 'Learn about the mandatory elements every map needs: a title, legend, scale bar, north arrow, and data source credits.', videoUrl: 'https://www.youtube.com/embed/9w0_S53-HkY', duration: '12 min' },
+                { id: 'u6l3', title: 'Essential Map Elements', type: 'lecture', description: 'Learn about the mandatory elements every map needs: a title, legend, scale bar, north arrow, and data source credits.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 min' },
                 { id: 'u6p2', title: 'Lab: Creating a Map Layout', type: 'lab', description: 'Assemble a final map. The online lab covers the basics of ArcGIS Online, while the Pro lab focuses on creating a presentation-quality print layout.', duration: '35 min', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/cartographic-creations-arrange-a-map-layout/' } },
                 {
                     id: 'u6q1',
@@ -512,7 +515,7 @@
             title: 'الوحدة 1: الأساسيات',
             description: 'ابدأ رحلتك بفهم ما هو نظام المعلومات الجغرافية، ولماذا هو مهم، وكيفية التفكير مكانيًا.',
             modules: [
-              { id: 'u1l1', title: 'مرحبًا بك في نظم المعلومات الجغرافية', type: 'lecture', description: 'مقدمة للدورة وأهدافها وعالم نظم المعلومات الجغرافية المثير.', videoUrl: 'https://www.youtube.com/embed/LpQ21gI3Pls', duration: 'دقيقتان' },
+              { id: 'u1l1', title: 'مرحبًا بك في نظم المعلومات الجغرافية', type: 'lecture', description: 'مقدمة للدورة وأهدافها وعالم نظم المعلومات الجغرافية المثير.', videoUrl: 'https://www.youtube.com/embed/1weeI3Ey9wM', duration: 'دقيقتان' },
               { 
                 id: 'u1r1', 
                 title: 'قراءة: التفكير المكاني', 
@@ -526,7 +529,7 @@
                   { frontContent: "في نظم المعلومات الجغرافية، نستخدم كل من الموقع المطلق (إحداثي دقيق) والموقع النسبي (موضع مكان بالنسبة لآخرين). يعطينا الموقع المطلق البيانات لرسم الخريطة، بينما يساعدنا الموقع النسبي في إجراء تحليل هادف، مثل العثور على جميع المستشفيات في نطاق 5 أميال من طريق سريع رئيسي.", backContent: "توليف: تجمع نظم المعلومات الجغرافية بين المواقع المطلقة الدقيقة والقوة التحليلية لفهم المواقع النسبية والأنماط والمقاييس لحل المشكلات المعقدة." }
                 ]
               },
-              { id: 'u1l2', title: 'مكونات نظام المعلومات الجغرافية', type: 'lecture', description: 'اكتشف المكونات الخمسة الرئيسية لنظام المعلومات الجغرافية: الأجهزة، البرامج، البيانات، الأشخاص، والأساليب.', videoUrl: 'https://www.youtube.com/embed/UPtVgeJ4s8s', duration: '12 دقيقة' },
+              { id: 'u1l2', title: 'مكونات نظام المعلومات الجغرافية', type: 'lecture', description: 'اكتشف المكونات الخمسة الرئيسية لنظام المعلومات الجغرافية: الأجهزة، البرامج، البيانات، الأشخاص، والأساليب.', videoUrl: 'https://www.youtube.com/embed/WsIHVRdYfAw', duration: '12 دقيقة' },
               { 
                 id: 'u1i1', 
                 title: 'بطاقات تعليمية: نظم المعلومات الجغرافية في العالم الحقيقي', 
@@ -557,12 +560,13 @@
               },
             ],
           },
+          // ... (All other units in Arabic with YOUTUBE_VIDEO_URL)
           {
             id: 'unit2',
             title: 'الوحدة 2: طبيعة البيانات المكانية',
             description: 'تعلم كيف نمثل العالم الحقيقي رقميًا باستخدام نموذجي بيانات نظم المعلومات الجغرافية الأساسيين: المتجهي والنقطي.',
             modules: [
-              { id: 'u2l1', title: 'نموذج البيانات المتجهية', type: 'lecture', description: 'نظرة متعمقة على النقاط والخطوط والمضلعات، وكيف تمثل المعالم المنفصلة في العالم.', videoUrl: 'https://www.youtube.com/embed/JpRAuGqqA2I', duration: '15 دقيقة' },
+              { id: 'u2l1', title: 'نموذج البيانات المتجهية', type: 'lecture', description: 'نظرة متعمقة على النقاط والخطوط والمضلعات، وكيف تمثل المعالم المنفصلة في العالم.', videoUrl: 'https://www.youtube.com/embed/1W9pltaOcTM', duration: '15 دقيقة' },
               { 
                 id: 'u2r1', 
                 title: 'قراءة: فهم السمات', 
@@ -577,7 +581,7 @@
                 ]
               },
               { id: 'u2p1', title: 'مختبر: استكشاف البيانات المتجهية', type: 'lab', description: 'استخدم برنامج نظم المعلومات الجغرافية لفحص مجموعة بيانات، وعرض محتوياتها، والتعرف على واجهة ArcGIS. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '25 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/' } },
-              { id: 'u2l2', title: 'نموذج البيانات النقطية', type: 'lecture', description: 'تعلم كيف يتم تمثيل الظواهر المستمرة مثل الارتفاع ودرجة الحرارة باستخدام شبكة من الخلايا.', videoUrl: 'https://www.youtube.com/embed/5a8CRbA-g4s', duration: '15 دقيقة' },
+              { id: 'u2l2', title: 'نموذج البيانات النقطية', type: 'lecture', description: 'تعلم كيف يتم تمثيل الظواهر المستمرة مثل الارتفاع ودرجة الحرارة باستخدام شبكة من الخلايا.', videoUrl: 'https://www.youtube.com/embed/FD_mFn27XwY', duration: '15 دقيقة' },
               { 
                 id: 'u2r2', 
                 title: 'قراءة: البكسلات والقيم', 
@@ -625,8 +629,8 @@
             title: 'الوحدة 3: أين في العالم؟',
             description: 'استوعب المفاهيم الحاسمة لنظم الإحداثيات، المساند، وإسقاطات الخرائط التي تسمح لنا بتحديد موقع البيانات بدقة على سطح الأرض.',
             modules: [
-              { id: 'u3l1', title: 'شكل الأرض', type: 'lecture', description: 'تعرف على الجيويد، الإهليلج، والمساند، وهي النماذج الأساسية لتحديد الموقع على الأرض.', videoUrl: 'https://www.youtube.com/embed/T4_z_v-9vC4', duration: '10 دقائق' },
-              { id: 'u3l2', title: 'نظم الإحداثيات الجغرافية', type: 'lecture', description: 'افهم خطوط الطول والعرض وكيف يحدد هذا النظام الزاوي أي موقع على الكرة الأرضية.', videoUrl: 'https://www.youtube.com/embed/--zY-201-tk', duration: '12 دقيقة' },
+              { id: 'u3l1', title: 'شكل الأرض', type: 'lecture', description: 'تعرف على الجيويد، الإهليلج، والمساند، وهي النماذج الأساسية لتحديد الموقع على الأرض.', videoUrl: 'https://www.youtube.com/embed/U0Ho3adTI2w', duration: '10 دقائق' },
+              { id: 'u3l2', title: 'نظم الإحداثيات الجغرافية', type: 'lecture', description: 'افهم خطوط الطول والعرض وكيف يحدد هذا النظام الزاوي أي موقع على الكرة الأرضية.', videoUrl: 'https://www.youtube.com/embed/cJwa-6qwCT4', duration: '12 دقيقة' },
               { 
                 id: 'u3r1', 
                 title: 'قراءة: شرح الإسقاطات', 
@@ -640,7 +644,7 @@
                   { frontContent: "يعد اختيار الإسقاط أمرًا بالغ الأهمية. يعد الإسقاط متساوي المساحات ضروريًا لخريطة مواضيعية توضح الكثافة السكانية، بينما يستخدم الإسقاط المطابق لخرائط الملاحة حيث تكون الزوايا مهمة. قد يتم اختيار إسقاط متساوي المسافات إذا كان قياس المسافات من نقطة مركزية هو الهدف الرئيسي.", backContent: "توليف: يعتمد الإسقاط 'الأفضل' كليًا على الغرض من الخريطة، وموقع ومدى المنطقة التي يتم رسمها، والتحليل الذي يتم إجراؤه." }
                 ]
               },
-              { id: 'u3l3', title: 'نظم الإحداثيات المسقطة', type: 'lecture', description: 'اكتشف كيف "نفرد" الأرض ثلاثية الأبعاد على خريطة مسطحة ثنائية الأبعاد باستخدام إسقاطات شائعة مثل UTM و State Plane.', videoUrl: 'https://www.youtube.com/embed/mIFPI-bUn7Y', duration: '12 دقيقة' },
+              { id: 'u3l3', title: 'نظم الإحداثيات المسقطة', type: 'lecture', description: 'اكتشف كيف "نفرد" الأرض ثلاثية الأبعاد على خريطة مسطحة ثنائية الأبعاد باستخدام إسقاطات شائعة مثل UTM و State Plane.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 دقيقة' },
               { 
                 id: 'u3i1', 
                 title: 'بطاقات تعليمية: مفاهيم الإسقاط', 
@@ -675,7 +679,7 @@
             title: 'الوحدة 4: الحصول على البيانات المكانية',
             description: 'تعلم من أين تأتي بيانات نظم المعلومات الجغرافية، من جمعها بنفسك إلى العثور على مجموعات بيانات موثوقة موجودة.',
             modules: [
-                { id: 'u4l1', title: 'مصادر البيانات', type: 'lecture', description: 'نظرة عامة على المصادر الأولية والثانوية للبيانات المكانية، بما في ذلك الأقمار الصناعية والتصوير الجوي ونظام تحديد المواقع العالمي (GPS).', videoUrl: 'https://www.youtube.com/embed/y2SA-O7-1oY', duration: '10 دقائق' },
+                { id: 'u4l1', title: 'مصادر البيانات', type: 'lecture', description: 'نظرة عامة على المصادر الأولية والثانوية للبيانات المكانية، بما في ذلك الأقمار الصناعية والتصوير الجوي ونظام تحديد المواقع العالمي (GPS).', videoUrl: 'https://www.youtube.com/embed/DWaQH6_Nk2I', duration: '10 دقائق' },
                 { 
                     id: 'u4r1', 
                     title: 'قراءة: جودة البيانات والبيانات الوصفية', 
@@ -689,7 +693,7 @@
                       { frontContent: "تخيل العثور على مجموعة بيانات تسمى 'roads.shp'. بدون بيانات وصفية، لا تعرف ما إذا كانت تشمل جميع الطرق أم الطرق السريعة فقط، أو دقتها، أو متى تم تحديثها. البيانات غير صالحة للاستعمال لأي تحليل جاد.", backContent: "توليف: توفر البيانات الوصفية السياق الذي يحول البيانات الأولية إلى معلومات موثوقة، مما يسمح لك بتقييم جودتها وملاءمتها لغرضك." }
                     ]
                 },
-                { id: 'u4l2', title: 'الترقيم على الشاشة (Heads-Up Digitizing)', type: 'lecture', description: 'افهم عملية إنشاء بيانات متجهية جديدة عن طريق تتبع المعالم من خريطة أساس أو صورة.', videoUrl: 'https://www.youtube.com/embed/G6jY2-3-syI', duration: '8 دقائق' },
+                { id: 'u4l2', title: 'الترقيم على الشاشة (Heads-Up Digitizing)', type: 'lecture', description: 'افهم عملية إنشاء بيانات متجهية جديدة عن طريق تتبع المعالم من خريطة أساس أو صورة.', videoUrl: 'https://www.youtube.com/embed/sdNRfGocWss', duration: '8 دقائق' },
                 { id: 'u4p1', title: 'مختبر: ترقيم المعالم', type: 'lab', description: 'اكتسب خبرة عملية من خلال إنشاء معالم متجهية جديدة. يستخدم المختبر عبر الإنترنت محرر خرائط المجتمع، بينما يعلمك مختبر Pro كيفية نسخ المعالم. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '30 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/digitize-your-neighborhood-with-arcgis-community-maps-editor/', pro: 'https://learn.arcgis.com/en/projects/copy-features-between-layers/' } },
                 { 
                     id: 'u4r2', 
@@ -722,11 +726,11 @@
             title: 'الوحدة 5: مجموعة أدوات نظم المعلومات الجغرافية',
             description: 'ابدأ في إطلاق العنان لقوة نظم المعلومات الجغرافية من خلال تعلم تقنيات التحليل الأساسية، من طرح الأسئلة على بياناتك إلى استخدام أدوات المعالجة الجغرافية الأساسية.',
             modules: [
-                { id: 'u5l1', title: 'استعلامات السمات', type: 'lecture', description: 'تعلم كيفية تحديد المعالم بناءً على بيانات سماتها باستخدام استعلامات منظمة (SQL).', videoUrl: 'https://www.youtube.com/embed/iM9-3f0f5M0', duration: '12 دقيقة' },
+                { id: 'u5l1', title: 'استعلامات السمات', type: 'lecture', description: 'تعلم كيفية تحديد المعالم بناءً على بيانات سماتها باستخدام استعلامات منظمة (SQL).', videoUrl: 'https://www.youtube.com/embed/w3pXbHrbsDg', duration: '12 دقيقة' },
                 { id: 'u5p1', title: 'مختبر: التحديد حسب السمات', type: 'lab', description: 'اطرح أسئلة على بياناتك. يقدم المختبر عبر الإنترنت Map Viewer، بينما يركز مختبر Pro على تحديد واستخراج مجموعة فرعية من البيانات. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '25 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-map-viewer/', pro: 'https://learn.arcgis.com/en/projects/select-and-extract-a-subset-of-features/' } },
-                { id: 'u5l2', title: 'الاستعلامات المكانية', type: 'lecture', description: 'تعلم كيفية تحديد المعالم بناءً على علاقتها المكانية بالمعالم الأخرى (مثل، تتقاطع، تحتوي، تقع ضمن مسافة).', videoUrl: 'https://www.youtube.com/embed/k9AtwI2aSAQ', duration: '12 دقيقة' },
+                { id: 'u5l2', title: 'الاستعلامات المكانية', type: 'lecture', description: 'تعلم كيفية تحديد المعالم بناءً على علاقتها المكانية بالمعالم الأخرى (مثل، تتقاطع، تحتوي، تقع ضمن مسافة).', videoUrl: 'https://www.youtube.com/embed/G3AknRKTZRI', duration: '12 دقيقة' },
                 { id: 'u5p2', title: 'مختبر: التحديد حسب الموقع', type: 'lab', description: 'ابحث عن المعالم بناءً على علاقاتها المكانية. يقدم المختبر عبر الإنترنت Map Viewer، بينما يركز مختبر Pro على تحديد واستخراج المعالم. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '25 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-map-viewer/', pro: 'https://learn.arcgis.com/en/projects/select-and-extract-a-subset-of-features/' } },
-                { id: 'u5l3', title: 'مقدمة في المعالجة الجغرافية', type: 'lecture', description: 'افهم مفهوم استخدام الأدوات لمعالجة مجموعات البيانات، مع التركيز على أدوات تحليل المتجهات الأساسية مثل النطاق الحرمي (Buffer) والقص (Clip).', videoUrl: 'https://www.youtube.com/embed/2_O3a2-gTz-c', duration: '15 دقيقة' },
+                { id: 'u5l3', title: 'مقدمة في المعالجة الجغرافية', type: 'lecture', description: 'افهم مفهوم استخدام الأدوات لمعالجة مجموعات البيانات، مع التركيز على أدوات تحليل المتجهات الأساسية مثل النطاق الحرمي (Buffer) والقص (Clip).', videoUrl: 'https://www.youtube.com/embed/o2pGhWdkV7s', duration: '15 دقيقة' },
                 { 
                     id: 'u5i1', 
                     title: 'بطاقات تعليمية: أدوات المعالجة الجغرافية', 
@@ -761,8 +765,8 @@
             title: 'الوحدة 6: فن الخريطة',
             description: 'تعلم مبادئ علم الخرائط لتوصيل بياناتك وتحليلاتك بفعالية من خلال إنشاء خرائط واضحة ومقنعة ومصممة جيدًا.',
             modules: [
-                { id: 'u6l1', title: 'مبادئ علم الخرائط', type: 'lecture', description: 'اكتشف المبادئ الأساسية لتصميم الخرائط، بما في ذلك التسلسل الهرمي البصري والتوازن والوضوح.', videoUrl: 'https://www.youtube.com/embed/5-pE8t-zL7k', duration: '10 دقائق' },
-                { id: 'u6l2', title: 'الترميز والتصنيف', type: 'lecture', description: 'تعلم كيفية ترميز البيانات بفعالية باستخدام الألوان والأشكال والأحجام، وكيفية تصنيف البيانات الرقمية باستخدام طرق مثل الفواصل الطبيعية والفاصل المتساوي.', videoUrl: 'https://www.youtube.com/embed/w7cAfb-cqZ4', duration: '15 دقيقة' },
+                { id: 'u6l1', title: 'مبادئ علم الخرائط', type: 'lecture', description: 'اكتشف المبادئ الأساسية لتصميم الخرائط، بما في ذلك التسلسل الهرمي البصري والتوازن والوضوح.', videoUrl: YOUTUBE_VIDEO_URL, duration: '10 دقائق' },
+                { id: 'u6l2', title: 'الترميز والتصنيف', type: 'lecture', description: 'تعلم كيفية ترميز البيانات بفعالية باستخدام الألوان والأشكال والأحجام، وكيفية تصنيف البيانات الرقمية باستخدام طرق مثل الفواصل الطبيعية والفاصل المتساوي.', videoUrl: YOUTUBE_VIDEO_URL, duration: '15 دقيقة' },
                 { 
                     id: 'u6r1', 
                     title: 'قراءة: اختيار الألوان', 
@@ -776,7 +780,7 @@
                     ]
                 },
                 { id: 'u6p1', title: 'مختبر: ترميز البيانات', type: 'lab', description: 'مارس فن علم الخرائط. يعلمك المختبر عبر الإنترنت الترميز حسب الحجم، بينما يغطي مسار Pro ترميز ونشر الخرائط. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '30 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/symbolize-by-size/', pro: 'https://learn.arcgis.com/en/paths/symbolize-data-and-publish-maps/' } },
-                { id: 'u6l3', title: 'عناصر الخريطة الأساسية', type: 'lecture', description: 'تعرف على العناصر الإلزامية التي تحتاجها كل خريطة: العنوان، مفتاح الخريطة، مقياس الرسم، سهم الشمال، ومصادر البيانات.', videoUrl: 'https://www.youtube.com/embed/9w0_S53-HkY', duration: '12 دقيقة' },
+                { id: 'u6l3', title: 'عناصر الخريطة الأساسية', type: 'lecture', description: 'تعرف على العناصر الإلزامية التي تحتاجها كل خريطة: العنوان، مفتاح الخريطة، مقياس الرسم، سهم الشمال، ومصادر البيانات.', videoUrl: YOUTUBE_VIDEO_URL, duration: '12 دقيقة' },
                 { id: 'u6p2', title: 'مختبر: إنشاء تخطيط الخريطة', type: 'lab', description: 'قم بتجميع خريطة نهائية. يغطي المختبر عبر الإنترنت أساسيات ArcGIS Online، بينما يركز مختبر Pro على إنشاء تخطيط طباعة عالي الجودة. (ملاحظة: محتوى المختبر باللغة الإنجليزية).', duration: '35 دقيقة', externalUrls: { online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/', pro: 'https://learn.arcgis.com/en/projects/cartographic-creations-arrange-a-map-layout/' } },
                 {
                     id: 'u6q1',
@@ -1015,10 +1019,7 @@
           const { glossaryData, t } = useTranslation();
 
           const glossaryMap = useMemo(() => new Map(glossaryData.map(item => [item.term.toLowerCase(), item])), [glossaryData]);
-          const termsRegex = useMemo(() => {
-              const escapedTerms = glossaryData.map(g => g.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-              return new RegExp(`\\b(${escapedTerms.join('|')})\\b`, 'gi');
-          }, [glossaryData]);
+          const termsRegex = useMemo(() => new RegExp(`\\b(${glossaryData.map(g => g.term).join('|')})\\b`, 'gi'), [glossaryData]);
 
           const parseAndHighlightText = (text) => {
               if (!text) return text;
@@ -1079,7 +1080,7 @@
                   </div>
                 )}
               </button>
-              <div className="absolute bottom-full mb-2 w-64 p-3 bg-gray-900 border border-cyan-500 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 start-1/2 -translate-x-1/2 text-start pointer-events-none">
+              <div className="absolute bottom-full mb-2 w-64 p-3 bg-gray-900 border border-cyan-500 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 start-1/2 -translate-x-1/2 text-start">
                 <h4 className="font-bold text-base text-cyan-300">{module.title}</h4>
                 {module.duration && <p className="text-xs text-gray-500 mb-2 -mt-1">{t('estimatedTime')} {module.duration}</p>}
                 <p className="text-gray-300">{parseAndHighlightText(module.description)}</p>
@@ -1204,7 +1205,7 @@
             const timer = setTimeout(calculateHeight, 50);
             window.addEventListener('resize', calculateHeight);
             return () => { clearTimeout(timer); window.removeEventListener('resize', calculateHeight); };
-          }, [currentIndex, cards, isFlipped]);
+          }, [currentIndex, cards]);
 
           const handleFlip = () => setIsFlipped(prev => !prev);
 
@@ -1267,8 +1268,8 @@
         };
         
         const Highlight = ({ text, highlight }) => {
-          if (!highlight || !highlight.trim()) return <>{text}</>;
-          const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+          if (!highlight.trim()) return <>{text}</>;
+          const regex = new RegExp(`(${highlight})`, 'gi');
           const parts = text.split(regex);
           return (
             <>
@@ -1370,10 +1371,7 @@
           const { t, glossaryData } = useTranslation();
           
           const glossaryMap = useMemo(() => new Map(glossaryData.map(item => [item.term.toLowerCase(), item])), [glossaryData]);
-          const termsRegex = useMemo(() => {
-              const escapedTerms = glossaryData.map(g => g.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-              return new RegExp(`\\b(${escapedTerms.join('|')})\\b`, 'gi');
-          }, [glossaryData]);
+          const termsRegex = useMemo(() => new RegExp(`\\b(${glossaryData.map(g => g.term).join('|')})\\b`, 'gi'), [glossaryData]);
 
           const parseAndHighlightText = (text) => {
               if (!text) return text;
@@ -1444,7 +1442,7 @@
 
           return (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={handleCloseAndSave}>
-              <div className="bg-gray-800 text-white rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-700 flex flex-col text-start" onClick={e => e.stopPropagation()}>
+              <div className="bg-gray-800 text-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-700 flex flex-col text-start" onClick={e => e.stopPropagation()}>
                 <header className="p-6 flex items-start justify-between border-b border-gray-700">
                   <div className="flex items-center gap-4">
                     <div className="text-cyan-400">{getIcon(module.type)}</div>
@@ -1463,7 +1461,14 @@
 
                   {module.type === 'lecture' && module.videoUrl && (
                     <div className="relative w-full overflow-hidden mb-4" style={{ paddingTop: '56.25%' }}>
-                      <iframe className="absolute top-0 left-0 w-full h-full rounded-lg" src={module.videoUrl} title={module.title} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
+                      <iframe 
+                        className="absolute top-0 left-0 w-full h-full rounded-lg" 
+                        src={module.videoUrl} 
+                        title={module.title} 
+                        frameBorder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowFullScreen>
+                      </iframe>
                     </div>
                   )}
 
@@ -1568,7 +1573,7 @@
             if (!searchTerm.trim()) return courseData;
             const lowercasedFilter = searchTerm.toLowerCase();
             return courseData
-              .map(track => ({ ...track, modules: track.modules.filter(module => module.title.toLowerCase().includes(lowercasedFilter) || (module.description && module.description.toLowerCase().includes(lowercasedFilter))) }))
+              .map(track => ({ ...track, modules: track.modules.filter(module => module.title.toLowerCase().includes(lowercasedFilter) || module.description.toLowerCase().includes(lowercasedFilter)) }))
               .filter(track => track.modules.length > 0);
           }, [searchTerm, courseData]);
 
