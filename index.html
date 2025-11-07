@@ -10,11 +10,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
     <style>
+      :root {
+        --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      }
+      
       body {
         font-family: 'Inter', sans-serif;
+        transition: var(--transition-theme);
+      }
+      
+      /* Dark Theme (Default) */
+      body.dark-theme {
         background-color: #111827;
         color: #f9fafb;
       }
+      
+      /* Light Theme */
+      body.light-theme {
+        background-color: #f9fafb;
+        color: #111827;
+      }
+      
       .font-serif {
         font-family: 'Lora', serif;
       }
@@ -25,6 +41,30 @@
       }
       .animate-checkmark {
         animation: checkmark-pop 0.5s ease-out;
+      }
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slide-up {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.6s ease-out forwards;
+      }
+      .animate-slide-up {
+        animation: slide-up 0.8s ease-out forwards;
+      }
+      .touch-manipulation {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      @media (max-width: 640px) {
+        /* Mobile-specific optimizations */
+        * {
+          -webkit-tap-highlight-color: transparent;
+        }
       }
       .flashcard-container {
         perspective: 1000px;
@@ -50,6 +90,24 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyCfofmfrkV8G3qIkl8AIzCdf5ZuWF-Tt5U",
+        authDomain: "gis-fundamentals.firebaseapp.com",
+        projectId: "gis-fundamentals",
+        storageBucket: "gis-fundamentals.firebasestorage.app",
+        messagingSenderId: "989166755385",
+        appId: "1:989166755385:web:36492ec714596040c7f7e8",
+        measurementId: "G-FVQHB3DETN"
+      };
+      
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
   <script type="importmap">
 {
   "imports": {
@@ -69,10 +127,106 @@
 
         // --- DATA AND TRANSLATIONS ---
 
+        // --- COURSES DATA ---
+        // To add a new course, simply add a new object to the coursesData array below.
+        // Set available: true for courses that are ready, or available: false for "coming soon" courses.
+        // Each course can have its own courseData structure by adding it to the courseDataMap below.
+        
+        const coursesData = [
+          {
+            id: 'gis-fundamentals',
+            title: 'GIS Fundamentals',
+            description: 'An interactive journey into the world of Geographic Information Systems. From core concepts to hands-on projects, start your spatial thinking adventure here.',
+            available: true,
+            icon: '🗺️',
+            level: 'Beginner',
+            duration: '8-10 hours',
+            category: 'Core',
+            gradient: 'from-cyan-500 to-emerald-600',
+            featured: true
+          },
+          {
+            id: 'advanced-gis',
+            title: 'Advanced GIS Analysis',
+            description: 'Master advanced spatial analysis techniques, geoprocessing workflows, and complex data modeling.',
+            available: false,
+            icon: '📊',
+            level: 'Advanced',
+            duration: '12-15 hours',
+            category: 'Analysis',
+            gradient: 'from-purple-500 to-pink-600',
+            featured: false
+          },
+          {
+            id: 'remote-sensing',
+            title: 'Remote Sensing & Image Analysis',
+            description: 'Learn to process and analyze satellite imagery, aerial photography, and other remote sensing data.',
+            available: false,
+            icon: '🛰️',
+            level: 'Intermediate',
+            duration: '10-12 hours',
+            category: 'Imagery',
+            gradient: 'from-blue-500 to-indigo-600',
+            featured: false
+          },
+          {
+            id: 'web-gis',
+            title: 'Web GIS Development',
+            description: 'Build interactive web maps and GIS applications using modern web technologies and APIs.',
+            available: false,
+            icon: '🌐',
+            level: 'Intermediate',
+            duration: '14-16 hours',
+            category: 'Development',
+            gradient: 'from-orange-500 to-red-600',
+            featured: false
+          },
+          {
+            id: 'spatial-programming',
+            title: 'Spatial Programming with Python',
+            description: 'Automate GIS workflows and develop custom spatial analysis tools using Python and GIS libraries.',
+            available: false,
+            icon: '🐍',
+            level: 'Advanced',
+            duration: '16-20 hours',
+            category: 'Programming',
+            gradient: 'from-yellow-500 to-amber-600',
+            featured: false
+          },
+          {
+            id: 'cartography-design',
+            title: 'Cartography & Map Design',
+            description: 'Create beautiful, effective maps with professional design principles and visualization techniques.',
+            available: false,
+            icon: '🎨',
+            level: 'Intermediate',
+            duration: '8-10 hours',
+            category: 'Design',
+            gradient: 'from-rose-500 to-fuchsia-600',
+            featured: false
+          },
+          {
+            id: 'gis-data-structures',
+            title: 'GIS Data Structures, Design & Quality Assurance',
+            description: 'Master GIS data models, storage formats, data creation techniques, quality assessment, and web mapping applications.',
+            available: true,
+            icon: '💾',
+            level: 'Intermediate',
+            duration: '12-15 hours',
+            category: 'Data Management',
+            gradient: 'from-teal-500 to-cyan-600',
+            featured: false
+          }
+        ];
+
         const enTranslations = {
           gisFundamentals: 'GIS Fundamentals',
           landingPageDescription: 'An interactive journey into the world of Geographic Information Systems. From core concepts to hands-on projects, start your spatial thinking adventure here.',
           startLearning: 'Start Learning',
+          comingSoon: 'Coming Soon',
+          selectCourse: 'Select a Course',
+          availableCourses: 'Available Courses',
+          comingSoonSection: 'Coming Soon',
           courseDashboard: 'Course Dashboard',
           courseProgressDescription: 'Your progress for GIS Fundamentals',
           glossary: 'Glossary',
@@ -104,6 +258,10 @@
             gisFundamentals: 'أساسيات نظم المعلومات الجغرافية',
             landingPageDescription: 'رحلة تفاعلية إلى عالم نظم المعلومات الجغرافية. من المفاهيم الأساسية إلى المشاريع العملية، ابدأ مغامرتك في التفكير المكاني هنا.',
             startLearning: 'ابدأ التعلم',
+            comingSoon: 'قريباً',
+            selectCourse: 'اختر دورة',
+            availableCourses: 'الدورات المتاحة',
+            comingSoonSection: 'قريباً',
             courseDashboard: 'لوحة تحكم الدورة',
             courseProgressDescription: 'تقدمك في أساسيات نظم المعلومات الجغرافية',
             glossary: 'مسرد المصطلحات',
@@ -509,6 +667,546 @@
           },
         ];
 
+        // GIS Data Structures, Design & Quality Assurance Course
+        const gisDataStructuresEnCourseData = [
+          {
+            id: 'ds-unit1',
+            title: 'Unit 1: Introduction & Spatial Data Models',
+            description: 'Explore the fundamental concepts of GIS data structures, covering vector and raster data models, scale considerations, and relational database design principles.',
+            modules: [
+              {
+                id: 'ds-l1-1',
+                title: 'Vector Data Concepts',
+                type: 'lecture',
+                description: 'Introduction to vector data model: points, lines, polygons, and how they represent discrete geographic features.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l1-2',
+                title: 'Vector Data Applications',
+                type: 'lecture',
+                description: 'Practical examples and applications of vector data in real-world GIS scenarios.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l1-3',
+                title: 'Raster Data Concepts',
+                type: 'lecture',
+                description: 'Understanding raster data model: cells, pixels, continuous surfaces, and grid-based representation.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l1-4',
+                title: 'Raster Data Applications',
+                type: 'lecture',
+                description: 'Real-world applications of raster data including elevation models, satellite imagery, and continuous phenomena.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l1-5',
+                title: 'Scale & Its Impact',
+                type: 'lecture',
+                description: 'Understanding map scale, its importance in GIS, and how scale affects data representation and analysis.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 min'
+              },
+              {
+                id: 'ds-r1',
+                title: 'Reading: Understanding Spatial Data Models',
+                type: 'reading-flashcards',
+                description: 'Deep dive into vector and raster data models through interactive reading materials.',
+                duration: '20 min',
+                readingCards: [
+                  { frontContent: 'Vector data represents geographic features as discrete objects using points, lines, and polygons. Each feature has precise coordinates and can store multiple attributes in an attribute table.', backContent: 'Key Concept: Vector data is ideal for representing discrete features with well-defined boundaries, such as roads, buildings, and administrative boundaries.' },
+                  { frontContent: 'Raster data represents geographic features as a grid of cells (pixels), where each cell has a value. This model is excellent for continuous phenomena like elevation, temperature, or satellite imagery.', backContent: 'Key Concept: Raster data excels at representing continuous surfaces and phenomena that vary gradually across space.' },
+                  { frontContent: 'Scale is crucial in GIS - it determines the level of detail and the extent of coverage. Large-scale maps show small areas in detail, while small-scale maps show large areas with less detail.', backContent: 'Application: Understanding scale helps you choose appropriate data sources and determine the appropriate level of detail for your analysis.' }
+                ]
+              },
+              {
+                id: 'ds-l2-1',
+                title: 'Catalog Pane Management',
+                type: 'lecture',
+                description: 'Learn how to navigate and manage your GIS data using the Catalog Pane in ArcGIS.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l2-2',
+                title: 'Attribute Data Types',
+                type: 'lecture',
+                description: 'Understanding different attribute data types (text, numbers, dates) and when to use each in your database design.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l2-3',
+                title: 'Vector Attribute Tables',
+                type: 'lecture',
+                description: 'Working with attribute tables: viewing, editing, sorting, and managing feature attributes.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l2-4',
+                title: 'Joins & Relates',
+                type: 'lecture',
+                description: 'Learn when and how to use joins versus relates to connect data from multiple tables.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 min'
+              },
+              {
+                id: 'ds-l2-5',
+                title: 'Data Separation (Part 1)',
+                type: 'lecture',
+                description: 'Introduction to data normalization and why separating data into related tables improves database design.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l2-6',
+                title: 'Data Separation (Part 2)',
+                type: 'lecture',
+                description: 'Advanced techniques for separating data: creating relationships, maintaining referential integrity, and best practices.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-f1',
+                title: 'Flashcards: Data Design Concepts',
+                type: 'flashcards',
+                description: 'Review key terms about data design, attribute tables, joins, and relational database concepts.',
+                duration: '10 min',
+                flashcards: [
+                  { term: 'Attribute Table', definition: 'A table containing non-spatial information linked to geographic features, where each row represents a feature and each column represents an attribute.' },
+                  { term: 'Join', definition: 'A database operation that combines data from two tables based on a common field, appending attributes to features.' },
+                  { term: 'Relate', definition: 'A database operation that creates a relationship between two tables without physically joining them, useful for one-to-many relationships.' },
+                  { term: 'Data Normalization', definition: 'The process of organizing data to reduce redundancy and improve data integrity by separating data into related tables.' }
+                ]
+              },
+              {
+                id: 'ds-q1',
+                title: 'Quiz: Rasters and Vectors',
+                type: 'quiz',
+                description: 'Test your understanding of vector and raster data concepts.',
+                duration: '15 min',
+                questions: [
+                  { text: 'Which data model is best for representing continuous phenomena like elevation?', options: ['Vector', 'Raster', 'Both equally', 'Neither'], correctAnswer: 1 },
+                  { text: 'What is the primary advantage of vector data?', options: ['Continuous representation', 'Precise boundaries', 'Small file size', 'Easy to process'], correctAnswer: 1 }
+                ]
+              },
+              {
+                id: 'ds-q2',
+                title: 'Quiz: Data Design',
+                type: 'quiz',
+                description: 'Assess your knowledge of database design principles and attribute management.',
+                duration: '15 min',
+                questions: [
+                  { text: 'What is the purpose of data normalization?', options: ['Increase file size', 'Reduce redundancy', 'Simplify queries', 'Add complexity'], correctAnswer: 1 }
+                ]
+              },
+              {
+                id: 'ds-lab1',
+                title: 'Lab: Data Structures and Personal Geodatabases',
+                type: 'lab',
+                description: 'Hands-on practice with data structures and working with personal geodatabases.',
+                duration: '45 min',
+                externalUrls: {
+                  online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                  pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              }
+            ]
+          },
+          {
+            id: 'ds-unit2',
+            title: 'Unit 2: Building and Manipulating Vector Features',
+            description: 'Develop practical skills for creating, editing, and processing vector data through geoprocessing techniques, querying, and digitizing workflows.',
+            modules: [
+              {
+                id: 'ds-l3-1',
+                title: 'Geoprocessing Tools',
+                type: 'lecture',
+                description: 'Introduction to the geoprocessing framework: accessing tools, setting parameters, and running analysis operations.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l3-2',
+                title: 'Intersect Tool',
+                type: 'lecture',
+                description: 'Deep dive into the Intersect tool: finding overlapping features, understanding output geometry, and practical applications.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l3-3',
+                title: 'Query String Syntax',
+                type: 'lecture',
+                description: 'Learn the syntax and structure of SQL query strings for selecting features based on attribute values.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l3-4',
+                title: 'Boolean Operators',
+                type: 'lecture',
+                description: 'Master AND, OR, NOT operators to build complex queries that select features meeting multiple criteria.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l3-5',
+                title: 'Field Calculator',
+                type: 'lecture',
+                description: 'Create new fields and populate them using field calculator: expressions, functions, and data type considerations.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l3-6',
+                title: 'Interactive Selection',
+                type: 'lecture',
+                description: 'Learn to select features interactively using various selection tools and methods in the map view.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '8 min'
+              },
+              {
+                id: 'ds-l3-7',
+                title: 'Selection Methods',
+                type: 'lecture',
+                description: 'Advanced selection techniques: selection by attributes, by location, selection options, and managing selected sets.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-i1',
+                title: 'Interaction: Query Building Practice',
+                type: 'interaction',
+                description: 'Interactive exercises for building effective query strings and using Boolean operators.',
+                duration: '20 min'
+              },
+              {
+                id: 'ds-l4-1',
+                title: 'Editing Features',
+                type: 'lecture',
+                description: 'Learn to modify existing features: moving vertices, reshaping polygons, splitting features, and merging geometries.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l4-2',
+                title: 'Creating Feature Classes',
+                type: 'lecture',
+                description: 'Design and create new feature classes: choosing geometry type, defining coordinate system, and setting up attribute fields.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l4-3',
+                title: 'Basic Digitizing',
+                type: 'lecture',
+                description: 'Introduction to digitizing: creating new features by tracing from imagery or basemaps, snapping, and precision techniques.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 min'
+              },
+              {
+                id: 'ds-l4-4',
+                title: 'Data Preparation Workflow',
+                type: 'lecture',
+                description: 'Step-by-step workflow for preparing your data before digitizing: setting up coordinate systems, organizing layers, and planning your approach.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l4-5',
+                title: 'Points from Coordinates',
+                type: 'lecture',
+                description: 'Convert coordinate data (latitude/longitude, X/Y) into point features: importing tables, displaying XY data, and creating feature classes.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-lab2',
+                title: 'Lab: Editing Vector Data',
+                type: 'lab',
+                description: 'Practical exercises in editing, creating, and manipulating vector features.',
+                duration: '50 min',
+                externalUrls: {
+                  online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                  pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              },
+              {
+                id: 'ds-q3',
+                title: 'Quiz: Processing and Geoprocessing',
+                type: 'quiz',
+                description: 'Test your understanding of geoprocessing tools and data manipulation techniques.',
+                duration: '15 min',
+                questions: [
+                  { text: 'What does the Intersect tool do?', options: ['Combines all features', 'Finds overlapping areas', 'Deletes features', 'Creates buffers'], correctAnswer: 1 }
+                ]
+              },
+              {
+                id: 'ds-q4',
+                title: 'Quiz: Creating and Editing Data',
+                type: 'quiz',
+                description: 'Assess your knowledge of data creation and editing workflows.',
+                duration: '15 min',
+                questions: [
+                  { text: 'What is digitizing?', options: ['Deleting data', 'Creating features from imagery', 'Calculating fields', 'Joining tables'], correctAnswer: 1 }
+                ]
+              }
+            ]
+          },
+          {
+            id: 'ds-unit3',
+            title: 'Unit 3: Data Storage Systems & Raster Processing',
+            description: 'Explore data storage formats in depth and learn advanced raster data manipulation using Spatial Analyst tools.',
+            modules: [
+              {
+                id: 'ds-l5-1',
+                title: 'Geodatabase Design',
+                type: 'lecture',
+                description: 'Understanding geodatabase architecture: feature classes, feature datasets, domains, subtypes, and relationship classes.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 min'
+              },
+              {
+                id: 'ds-l5-2',
+                title: 'File Geodatabases',
+                type: 'lecture',
+                description: 'Working with file geodatabases: creation, advantages, performance, and best practices for data organization.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l5-3',
+                title: 'Personal Geodatabases',
+                type: 'lecture',
+                description: 'Understanding personal geodatabases: when to use them, limitations, and migration to file geodatabases.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '8 min'
+              },
+              {
+                id: 'ds-l5-4',
+                title: 'Shapefiles',
+                type: 'lecture',
+                description: 'Working with shapefiles: structure, limitations, compatibility, and when shapefiles are still appropriate.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l5-5',
+                title: 'Percent Overlap Workflow',
+                type: 'lecture',
+                description: 'Practical workflow for calculating percent overlap between features using geoprocessing tools and field calculations.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l5-6',
+                title: 'SQLite Databases',
+                type: 'lecture',
+                description: 'Introduction to SQLite databases: lightweight database option, use cases, and integration with GIS workflows.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l6-1',
+                title: 'Spatial Analyst Overview',
+                type: 'lecture',
+                description: 'Introduction to Spatial Analyst extension: capabilities, tool categories, and common raster analysis operations.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l6-2',
+                title: 'Georeferencing Rasters',
+                type: 'lecture',
+                description: 'Learn to georeference raster images: adding control points, transformation methods, and rectifying scanned maps or aerial photos.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 min'
+              },
+              {
+                id: 'ds-l6-3',
+                title: 'Raster Calculator',
+                type: 'lecture',
+                description: 'Using Raster Calculator for map algebra: mathematical operations, conditional statements, and complex raster expressions.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l6-4',
+                title: 'Zonal Statistics Workflow',
+                type: 'lecture',
+                description: 'Calculate zonal statistics: summarizing raster values within zones (polygons) and exporting results to tables.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l6-5',
+                title: 'Zonal Stats & Join Field',
+                type: 'lecture',
+                description: 'Complete workflow: combining zonal statistics with join field operations to enrich polygon features with raster summaries.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-lab3',
+                title: 'Lab: Suitability Analysis with Spatial Analyst',
+                type: 'lab',
+                description: 'Complete a suitability analysis project using Spatial Analyst tools, raster data, and DEMs.',
+                duration: '60 min',
+                externalUrls: {
+                  online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                  pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              },
+              {
+                id: 'ds-q5',
+                title: 'Quiz: Data Storage',
+                type: 'quiz',
+                description: 'Test your knowledge of different data storage formats and their characteristics.',
+                duration: '15 min',
+                questions: [
+                  { text: 'What is the main advantage of file geodatabases over shapefiles?', options: ['Smaller size', 'Better performance', 'More features', 'All of the above'], correctAnswer: 3 }
+                ]
+              },
+              {
+                id: 'ds-q6',
+                title: 'Quiz: Creating Raster Data',
+                type: 'quiz',
+                description: 'Assess your understanding of raster processing and Spatial Analyst tools.',
+                duration: '15 min',
+                questions: [
+                  { text: 'What is the purpose of the Raster Calculator?', options: ['Display rasters', 'Perform calculations', 'Edit attributes', 'Create maps'], correctAnswer: 1 }
+                ]
+              }
+            ]
+          },
+          {
+            id: 'ds-unit4',
+            title: 'Unit 4: Quality Assurance & Web Mapping',
+            description: 'Master data quality assessment, understand uncertainty in GIS, learn about topology, and create web maps using ArcGIS Online.',
+            modules: [
+              {
+                id: 'ds-l7-1',
+                title: 'Data Quality Assessment',
+                type: 'lecture',
+                description: 'Introduction to data quality concepts: accuracy, precision, completeness, and sources of uncertainty in GIS data.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l7-2',
+                title: 'Measurement & Representation',
+                type: 'lecture',
+                description: 'Understanding measurement uncertainty, representation errors, and how to document and communicate data quality issues.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l7-3',
+                title: 'Topology',
+                type: 'lecture',
+                description: 'Introduction to topology: spatial relationships, topology rules, validating geometry, and fixing topological errors.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 min'
+              },
+              {
+                id: 'ds-l8-1',
+                title: 'Loading Layers',
+                type: 'lecture',
+                description: 'Getting started with ArcGIS Online: accessing the platform, adding layers from various sources, and organizing your map.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '8 min'
+              },
+              {
+                id: 'ds-l8-2',
+                title: 'Applying Symbology',
+                type: 'lecture',
+                description: 'Customize layer appearance: choosing symbols, colors, sizes, and styles to effectively represent your data.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l8-3',
+                title: 'Map Annotations & Scaling',
+                type: 'lecture',
+                description: 'Add text, labels, and annotations to your map, and configure scale-dependent visibility for layers.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '8 min'
+              },
+              {
+                id: 'ds-l8-4',
+                title: 'Saving & Sharing Maps',
+                type: 'lecture',
+                description: 'Save your web maps, configure sharing settings, create public or private maps, and generate shareable links.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-l8-5',
+                title: 'Uploading Data',
+                type: 'lecture',
+                description: 'Upload your own data files: supported formats, creating hosted feature layers, and managing your content.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              },
+              {
+                id: 'ds-lab4',
+                title: 'Lab: Creating Web Maps',
+                type: 'lab',
+                description: 'Hands-on practice creating and sharing web maps using ArcGIS Online.',
+                duration: '45 min',
+                externalUrls: {
+                  online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                  pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              },
+              {
+                id: 'ds-q7',
+                title: 'Quiz: Uncertainty and Quality',
+                type: 'quiz',
+                description: 'Test your understanding of data quality concepts and uncertainty in GIS.',
+                duration: '15 min',
+                questions: [
+                  { text: 'What is topology?', options: ['Data format', 'Spatial relationships', 'Color scheme', 'Map projection'], correctAnswer: 1 }
+                ]
+              },
+              {
+                id: 'ds-q8',
+                title: 'Quiz: ArcGIS Online',
+                type: 'quiz',
+                description: 'Assess your knowledge of ArcGIS Online features and web mapping capabilities.',
+                duration: '15 min',
+                questions: [
+                  { text: 'What can you do with ArcGIS Online?', options: ['Create maps', 'Share maps', 'Upload data', 'All of the above'], correctAnswer: 3 }
+                ]
+              },
+              {
+                id: 'ds-project',
+                title: 'Final Project: Moving Valmeyer',
+                type: 'project',
+                description: 'Comprehensive final assignment including peer review and final quiz, applying all concepts learned throughout the course.',
+                duration: '90 min'
+              },
+              {
+                id: 'ds-summary',
+                title: 'Course Summary',
+                type: 'lecture',
+                description: 'Review of key concepts and course completion summary.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 min'
+              }
+            ]
+          }
+        ];
+
         const arCourseData = [
           {
             id: 'unit1',
@@ -808,6 +1506,564 @@
             ],
           },
         ];
+
+        // GIS Data Structures, Design & Quality Assurance Course (Arabic)
+        const gisDataStructuresArCourseData = [
+          {
+            id: 'ds-unit1',
+            title: 'الوحدة 1: مقدمة ونماذج البيانات المكانية',
+            description: 'استكشف المفاهيم الأساسية لهياكل بيانات نظم المعلومات الجغرافية، بما في ذلك نماذج البيانات المتجهية والنقطية، اعتبارات المقياس، ومبادئ تصميم قواعد البيانات العلائقية.',
+            modules: [
+              {
+                id: 'ds-l1-1',
+                title: 'مفاهيم البيانات المتجهية',
+                type: 'lecture',
+                description: 'مقدمة لنموذج البيانات المتجهية: النقاط والخطوط والمضلعات، وكيف تمثل المعالم الجغرافية المنفصلة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l1-2',
+                title: 'تطبيقات البيانات المتجهية',
+                type: 'lecture',
+                description: 'أمثلة عملية وتطبيقات للبيانات المتجهية في سيناريوهات نظم المعلومات الجغرافية الواقعية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l1-3',
+                title: 'مفاهيم البيانات النقطية',
+                type: 'lecture',
+                description: 'فهم نموذج البيانات النقطية: الخلايا والبكسلات والسطوح المستمرة والتمثيل القائم على الشبكة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l1-4',
+                title: 'تطبيقات البيانات النقطية',
+                type: 'lecture',
+                description: 'تطبيقات واقعية للبيانات النقطية بما في ذلك نماذج الارتفاع وصور الأقمار الصناعية والظواهر المستمرة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l1-5',
+                title: 'المقياس وتأثيره',
+                type: 'lecture',
+                description: 'فهم مقياس الخريطة وأهميته في نظم المعلومات الجغرافية، وكيف يؤثر المقياس على تمثيل البيانات والتحليل.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 دقيقة'
+              },
+              {
+                id: 'ds-r1',
+                title: 'قراءة: فهم نماذج البيانات المكانية',
+                type: 'reading-flashcards',
+                description: 'تعمق في نماذج البيانات المتجهية والنقطية من خلال مواد القراءة التفاعلية.',
+                duration: '20 دقيقة',
+                readingCards: [
+                  { frontContent: 'تمثل البيانات المتجهية المعالم الجغرافية ككائنات منفصلة باستخدام النقاط والخطوط والمضلعات. لكل معلم إحداثيات دقيقة ويمكنه تخزين سمات متعددة في جدول السمات.', backContent: 'المفهوم الرئيسي: البيانات المتجهية مثالية لتمثيل المعالم المنفصلة ذات الحدود المحددة جيدًا، مثل الطرق والمباني والحدود الإدارية.' },
+                  { frontContent: 'تمثل البيانات النقطية المعالم الجغرافية كشبكة من الخلايا (البكسلات)، حيث يكون لكل خلية قيمة. هذا النموذج ممتاز للظواهر المستمرة مثل الارتفاع ودرجة الحرارة أو صور الأقمار الصناعية.', backContent: 'المفهوم الرئيسي: البيانات النقطية تتفوق في تمثيل الأسطح المستمرة والظواهر التي تختلف تدريجيًا عبر الفضاء.' },
+                  { frontContent: 'المقياس مهم في نظم المعلومات الجغرافية - يحدد مستوى التفاصيل ومدى التغطية. الخرائط واسعة النطاق تُظهر مناطق صغيرة بالتفصيل، بينما الخرائط صغيرة النطاق تُظهر مناطق كبيرة بتفاصيل أقل.', backContent: 'التطبيق: فهم المقياس يساعدك على اختيار مصادر البيانات المناسبة وتحديد مستوى التفاصيل المناسب لتحليلك.' }
+                ]
+              },
+              {
+                id: 'ds-l2-1',
+                title: 'إدارة لوحة الكتالوج',
+                type: 'lecture',
+                description: 'تعلم كيفية التنقل وإدارة بيانات نظم المعلومات الجغرافية باستخدام لوحة الكتالوج في ArcGIS.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l2-2',
+                title: 'أنواع بيانات السمات',
+                type: 'lecture',
+                description: 'فهم أنواع بيانات السمات المختلفة (نص، أرقام، تواريخ) ومتى تستخدم كل نوع في تصميم قاعدة البيانات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l2-3',
+                title: 'جداول سمات المتجهات',
+                type: 'lecture',
+                description: 'العمل مع جداول السمات: العرض والتحرير والفرز وإدارة سمات المعالم.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l2-4',
+                title: 'الوصلات والعلاقات',
+                type: 'lecture',
+                description: 'تعلم متى وكيف تستخدم الوصلات مقابل العلاقات لربط البيانات من جداول متعددة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 دقيقة'
+              },
+              {
+                id: 'ds-l2-5',
+                title: 'فصل البيانات (الجزء 1)',
+                type: 'lecture',
+                description: 'مقدمة لتطبيع البيانات ولماذا يحسن فصل البيانات إلى جداول مرتبطة من تصميم قاعدة البيانات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l2-6',
+                title: 'فصل البيانات (الجزء 2)',
+                type: 'lecture',
+                description: 'تقنيات متقدمة لفصل البيانات: إنشاء العلاقات، الحفاظ على تكامل المرجعية، وأفضل الممارسات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-f1',
+                title: 'بطاقات: مفاهيم تصميم البيانات',
+                type: 'flashcards',
+                description: 'راجع المصطلحات الرئيسية حول تصميم البيانات وجداول السمات والوصلات ومفاهيم قواعد البيانات العلائقية.',
+                duration: '10 دقائق',
+                flashcards: [
+                  { term: 'جدول السمات', definition: 'جدول يحتوي على معلومات غير مكانية مرتبطة بالمعالم الجغرافية، حيث يمثل كل صف معلمًا وكل عمود سمة.' },
+                  { term: 'الوصل', definition: 'عملية قاعدة بيانات تجمع البيانات من جدولين بناءً على حقل مشترك، مما يضيف السمات إلى المعالم.' },
+                  { term: 'العلاقة', definition: 'عملية قاعدة بيانات تنشئ علاقة بين جدولين دون ربطهما فعليًا، مفيدة للعلاقات من واحد إلى كثير.' },
+                  { term: 'تطبيع البيانات', definition: 'عملية تنظيم البيانات لتقليل التكرار وتحسين تكامل البيانات من خلال فصل البيانات إلى جداول مرتبطة.' }
+                ]
+              },
+              {
+                id: 'ds-q1',
+                title: 'اختبار: البيانات النقطية والمتجهية',
+                type: 'quiz',
+                description: 'اختبر فهمك لمفاهيم البيانات المتجهية والنقطية.',
+                duration: '15 دقيقة',
+                questions: [
+                  { text: 'أي نموذج بيانات أفضل لتمثيل الظواهر المستمرة مثل الارتفاع؟', options: ['المتجه', 'النقطي', 'كلاهما بالتساوي', 'لا شيء'], correctAnswer: 1 }
+                ]
+              },
+              {
+                id: 'ds-q2',
+                title: 'اختبار: تصميم البيانات',
+                type: 'quiz',
+                description: 'قيم معرفتك بمبادئ تصميم قواعد البيانات وإدارة السمات.',
+                duration: '15 دقيقة',
+                questions: [
+                  { text: 'ما هو الغرض من تطبيع البيانات؟', options: ['زيادة حجم الملف', 'تقليل التكرار', 'تبسيط الاستعلامات', 'إضافة التعقيد'], correctAnswer: 1 }
+                ]
+              },
+              {
+                id: 'ds-lab1',
+                title: 'مختبر: هياكل البيانات وقواعد البيانات الجغرافية الشخصية',
+                type: 'lab',
+                description: 'تدريب عملي على هياكل البيانات والعمل مع قواعد البيانات الجغرافية الشخصية.',
+                duration: '45 دقيقة',
+                externalUrls: {
+                  online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                  pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              }
+            ]
+          },
+          {
+            id: 'ds-unit2',
+            title: 'الوحدة 2: بناء ومعالجة المعالم المتجهية',
+            description: 'طور المهارات العملية لإنشاء وتحرير ومعالجة البيانات المتجهية من خلال تقنيات المعالجة الجغرافية والاستعلام والترقيم.',
+            modules: [
+              {
+                id: 'ds-l3-1',
+                title: 'أدوات المعالجة الجغرافية',
+                type: 'lecture',
+                description: 'مقدمة لإطار المعالجة الجغرافية: الوصول إلى الأدوات، تعيين المعاملات، وتشغيل عمليات التحليل.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l3-2',
+                title: 'أداة التقاطع',
+                type: 'lecture',
+                description: 'تعمق في أداة التقاطع: إيجاد المعالم المتداخلة، فهم هندسة الإخراج، والتطبيقات العملية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l3-3',
+                title: 'بناء جملة استعلام',
+                type: 'lecture',
+                description: 'تعلم بناء جملة وهيكل سلاسل استعلام SQL لاختيار المعالم بناءً على قيم السمات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l3-4',
+                title: 'العوامل المنطقية',
+                type: 'lecture',
+                description: 'أتقن عوامل AND و OR و NOT لبناء استعلامات معقدة تختار المعالم التي تلبي معايير متعددة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l3-5',
+                title: 'حاسبة الحقول',
+                type: 'lecture',
+                description: 'إنشاء حقول جديدة وملؤها باستخدام حاسبة الحقول: التعبيرات والدوال واعتبارات نوع البيانات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l3-6',
+                title: 'الاختيار التفاعلي',
+                type: 'lecture',
+                description: 'تعلم اختيار المعالم بشكل تفاعلي باستخدام أدوات وطرق الاختيار المختلفة في عرض الخريطة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '8 دقائق'
+              },
+              {
+                id: 'ds-l3-7',
+                title: 'طرق الاختيار',
+                type: 'lecture',
+                description: 'تقنيات الاختيار المتقدمة: الاختيار بالسمات، بالموقع، خيارات الاختيار، وإدارة المجموعات المحددة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-i1',
+                title: 'تفاعل: تمرين بناء الاستعلام',
+                type: 'interaction',
+                description: 'تمارين تفاعلية لبناء سلاسل استعلام فعالة واستخدام العوامل المنطقية.',
+                duration: '20 دقيقة'
+              },
+              {
+                id: 'ds-l4-1',
+                title: 'تحرير المعالم',
+                type: 'lecture',
+                description: 'تعلم تعديل المعالم الموجودة: نقل الرؤوس، إعادة تشكيل المضلعات، تقسيم المعالم، ودمج الأشكال الهندسية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l4-2',
+                title: 'إنشاء فئات المعالم',
+                type: 'lecture',
+                description: 'تصميم وإنشاء فئات معالم جديدة: اختيار نوع الهندسة، تعريف نظام الإحداثيات، وإعداد حقول السمات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l4-3',
+                title: 'الترقيم الأساسي',
+                type: 'lecture',
+                description: 'مقدمة للترقيم: إنشاء معالم جديدة عن طريق التتبع من الصور أو الخرائط الأساسية، الالتقاط، وتقنيات الدقة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 دقيقة'
+              },
+              {
+                id: 'ds-l4-4',
+                title: 'سير عمل تحضير البيانات',
+                type: 'lecture',
+                description: 'سير عمل خطوة بخطوة لتحضير بياناتك قبل الترقيم: إعداد أنظمة الإحداثيات، تنظيم الطبقات، وتخطيط نهجك.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l4-5',
+                title: 'النقاط من الإحداثيات',
+                type: 'lecture',
+                description: 'تحويل بيانات الإحداثيات (خط العرض/خط الطول، X/Y) إلى معالم نقطية: استيراد الجداول، عرض بيانات XY، وإنشاء فئات المعالم.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-lab2',
+                title: 'مختبر: تحرير البيانات المتجهية',
+                type: 'lab',
+                description: 'تمارين عملية في تحرير وإنشاء ومعالجة المعالم المتجهية.',
+                duration: '50 دقيقة',
+                externalUrls: {
+                  online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                  pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              },
+              {
+                id: 'ds-q3',
+                title: 'اختبار: المعالجة والمعالجة الجغرافية',
+                type: 'quiz',
+                description: 'اختبر فهمك لأدوات المعالجة الجغرافية وتقنيات معالجة البيانات.',
+                duration: '15 دقيقة',
+                questions: [
+                  { text: 'ماذا تفعل أداة التقاطع؟', options: ['تجمع جميع المعالم', 'تجد المناطق المتداخلة', 'تحذف المعالم', 'تنشئ مناطق عازلة'], correctAnswer: 1 }
+                ]
+              },
+              {
+                id: 'ds-q4',
+                title: 'اختبار: إنشاء وتحرير البيانات',
+                type: 'quiz',
+                description: 'قيم معرفتك بسير عمل إنشاء وتحرير البيانات.',
+                duration: '15 دقيقة',
+                questions: [
+                  { text: 'ما هو الترقيم؟', options: ['حذف البيانات', 'إنشاء المعالم من الصور', 'حساب الحقول', 'ربط الجداول'], correctAnswer: 1 }
+                ]
+              }
+            ]
+          },
+          {
+            id: 'ds-unit3',
+            title: 'الوحدة 3: أنظمة تخزين البيانات ومعالجة البيانات النقطية',
+            description: 'استكشف تنسيقات تخزين البيانات بعمق وتعلم معالجة البيانات النقطية المتقدمة باستخدام أدوات Spatial Analyst.',
+            modules: [
+              {
+                id: 'ds-l5-1',
+                title: 'تصميم قاعدة البيانات الجغرافية',
+                type: 'lecture',
+                description: 'فهم بنية قاعدة البيانات الجغرافية: فئات المعالم، مجموعات بيانات المعالم، المجالات، الأنواع الفرعية، وفئات العلاقات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 دقيقة'
+              },
+              {
+                id: 'ds-l5-2',
+                title: 'قواعد البيانات الجغرافية الملفية',
+                type: 'lecture',
+                description: 'العمل مع قواعد البيانات الجغرافية الملفية: الإنشاء، المزايا، الأداء، وأفضل الممارسات لتنظيم البيانات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l5-3',
+                title: 'قواعد البيانات الجغرافية الشخصية',
+                type: 'lecture',
+                description: 'فهم قواعد البيانات الجغرافية الشخصية: متى تستخدمها، القيود، والانتقال إلى قواعد البيانات الجغرافية الملفية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '8 دقائق'
+              },
+              {
+                id: 'ds-l5-4',
+                title: 'ملفات الشكل',
+                type: 'lecture',
+                description: 'العمل مع ملفات الشكل: الهيكل، القيود، التوافق، ومتى لا تزال ملفات الشكل مناسبة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l5-5',
+                title: 'سير عمل نسبة التداخل',
+                type: 'lecture',
+                description: 'سير عمل عملي لحساب نسبة التداخل بين المعالم باستخدام أدوات المعالجة الجغرافية وحسابات الحقول.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l5-6',
+                title: 'قواعد بيانات SQLite',
+                type: 'lecture',
+                description: 'مقدمة لقواعد بيانات SQLite: خيار قاعدة البيانات الخفيفة، حالات الاستخدام، والتكامل مع سير عمل نظم المعلومات الجغرافية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l6-1',
+                title: 'نظرة عامة على Spatial Analyst',
+                type: 'lecture',
+                description: 'مقدمة لامتداد Spatial Analyst: القدرات، فئات الأدوات، وعمليات تحليل البيانات النقطية الشائعة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l6-2',
+                title: 'تحديد الموقع الجغرافي للبيانات النقطية',
+                type: 'lecture',
+                description: 'تعلم تحديد الموقع الجغرافي لصور البيانات النقطية: إضافة نقاط التحكم، طرق التحويل، وتصحيح الخرائط الممسوحة ضوئيًا أو الصور الجوية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '15 دقيقة'
+              },
+              {
+                id: 'ds-l6-3',
+                title: 'حاسبة البيانات النقطية',
+                type: 'lecture',
+                description: 'استخدام حاسبة البيانات النقطية لجبر الخرائط: العمليات الرياضية، العبارات الشرطية، وتعبيرات البيانات النقطية المعقدة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l6-4',
+                title: 'سير عمل الإحصائيات المنطقية',
+                type: 'lecture',
+                description: 'حساب الإحصائيات المنطقية: تلخيص قيم البيانات النقطية داخل المناطق (المضلعات) وتصدير النتائج إلى جداول.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l6-5',
+                title: 'الإحصائيات المنطقية وربط الحقول',
+                type: 'lecture',
+                description: 'سير عمل كامل: الجمع بين الإحصائيات المنطقية وعمليات ربط الحقول لإثراء معالم المضلعات بملخصات البيانات النقطية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-lab3',
+                title: 'مختبر: تحليل الملاءمة مع Spatial Analyst',
+                type: 'lab',
+                description: 'أكمل مشروع تحليل ملاءمة باستخدام أدوات Spatial Analyst والبيانات النقطية ونماذج الارتفاع الرقمية.',
+                duration: '60 دقيقة',
+                externalUrls: {
+                  online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                  pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              },
+              {
+                id: 'ds-q5',
+                title: 'اختبار: تخزين البيانات',
+                type: 'quiz',
+                description: 'اختبر معرفتك بتنسيقات تخزين البيانات المختلفة وخصائصها.',
+                duration: '15 دقيقة',
+                questions: [
+                  { text: 'ما هي الميزة الرئيسية لقواعد البيانات الجغرافية الملفية على ملفات الشكل؟', options: ['حجم أصغر', 'أداء أفضل', 'ميزات أكثر', 'كل ما سبق'], correctAnswer: 3 }
+                ]
+              },
+              {
+                id: 'ds-q6',
+                title: 'اختبار: إنشاء البيانات النقطية',
+                type: 'quiz',
+                description: 'قيم فهمك لمعالجة البيانات النقطية وأدوات Spatial Analyst.',
+                duration: '15 دقيقة',
+                questions: [
+                  { text: 'ما هو الغرض من حاسبة البيانات النقطية؟', options: ['عرض البيانات النقطية', 'أداء الحسابات', 'تحرير السمات', 'إنشاء الخرائط'], correctAnswer: 1 }
+                ]
+              }
+            ]
+          },
+          {
+            id: 'ds-unit4',
+            title: 'الوحدة 4: ضمان الجودة ورسم الخرائط على الويب',
+            description: 'أتقن تقييم جودة البيانات، فهم عدم اليقين في نظم المعلومات الجغرافية، تعلم الطوبولوجيا، وإنشاء خرائط الويب باستخدام ArcGIS Online.',
+            modules: [
+              {
+                id: 'ds-l7-1',
+                title: 'تقييم جودة البيانات',
+                type: 'lecture',
+                description: 'مقدمة لمفاهيم جودة البيانات: الدقة، الدقة، الاكتمال، ومصادر عدم اليقين في بيانات نظم المعلومات الجغرافية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l7-2',
+                title: 'القياس والتمثيل',
+                type: 'lecture',
+                description: 'فهم عدم اليقين في القياس، أخطاء التمثيل، وكيفية توثيق وتوصيل مشاكل جودة البيانات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l7-3',
+                title: 'الطوبولوجيا',
+                type: 'lecture',
+                description: 'مقدمة للطوبولوجيا: العلاقات المكانية، قواعد الطوبولوجيا، التحقق من الهندسة، وإصلاح الأخطاء الطوبولوجية.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '12 دقيقة'
+              },
+              {
+                id: 'ds-l8-1',
+                title: 'تحميل الطبقات',
+                type: 'lecture',
+                description: 'البدء مع ArcGIS Online: الوصول إلى المنصة، إضافة الطبقات من مصادر مختلفة، وتنظيم خريطتك.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '8 دقائق'
+              },
+              {
+                id: 'ds-l8-2',
+                title: 'تطبيق الرموز',
+                type: 'lecture',
+                description: 'تخصيص مظهر الطبقة: اختيار الرموز والألوان والأحجام والأنماط لتمثيل بياناتك بشكل فعال.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l8-3',
+                title: 'تعليقات الخريطة والقياس',
+                type: 'lecture',
+                description: 'إضافة النصوص والتسميات والتعليقات إلى خريطتك، وتكوين الرؤية المعتمدة على المقياس للطبقات.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '8 دقائق'
+              },
+              {
+                id: 'ds-l8-4',
+                title: 'حفظ ومشاركة الخرائط',
+                type: 'lecture',
+                description: 'حفظ خرائط الويب الخاصة بك، تكوين إعدادات المشاركة، إنشاء خرائط عامة أو خاصة، وإنشاء روابط قابلة للمشاركة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-l8-5',
+                title: 'رفع البيانات',
+                type: 'lecture',
+                description: 'رفع ملفات البيانات الخاصة بك: التنسيقات المدعومة، إنشاء طبقات المعالم المستضافة، وإدارة المحتوى الخاص بك.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              },
+              {
+                id: 'ds-lab4',
+                title: 'مختبر: إنشاء خرائط الويب',
+                type: 'lab',
+                description: 'تدريب عملي على إنشاء ومشاركة خرائط الويب باستخدام ArcGIS Online.',
+                duration: '45 دقيقة',
+                externalUrls: {
+                  online: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-online/',
+                  pro: 'https://learn.arcgis.com/en/projects/get-started-with-arcgis-pro/'
+                }
+              },
+              {
+                id: 'ds-q7',
+                title: 'اختبار: عدم اليقين والجودة',
+                type: 'quiz',
+                description: 'اختبر فهمك لمفاهيم جودة البيانات وعدم اليقين في نظم المعلومات الجغرافية.',
+                duration: '15 دقيقة',
+                questions: [
+                  { text: 'ما هي الطوبولوجيا؟', options: ['تنسيق البيانات', 'العلاقات المكانية', 'مخطط الألوان', 'إسقاط الخريطة'], correctAnswer: 1 }
+                ]
+              },
+              {
+                id: 'ds-q8',
+                title: 'اختبار: ArcGIS Online',
+                type: 'quiz',
+                description: 'قيم معرفتك بميزات ArcGIS Online وقدرات رسم الخرائط على الويب.',
+                duration: '15 دقيقة',
+                questions: [
+                  { text: 'ماذا يمكنك أن تفعل مع ArcGIS Online؟', options: ['إنشاء الخرائط', 'مشاركة الخرائط', 'رفع البيانات', 'كل ما سبق'], correctAnswer: 3 }
+                ]
+              },
+              {
+                id: 'ds-project',
+                title: 'المشروع النهائي: نقل فالمير',
+                type: 'project',
+                description: 'مهمة نهائية شاملة تشمل مراجعة الأقران والاختبار النهائي، تطبيق جميع المفاهيم المتعلمة طوال الدورة.',
+                duration: '90 دقيقة'
+              },
+              {
+                id: 'ds-summary',
+                title: 'ملخص الدورة',
+                type: 'lecture',
+                description: 'مراجعة المفاهيم الرئيسية وملخص إكمال الدورة.',
+                videoUrl: 'https://www.youtube.com/embed/demo',
+                duration: '10 دقائق'
+              }
+            ]
+          }
+        ];
+
+        // --- COURSE DATA MAPPING ---
+        // Map each course ID to its course data structure
+        // When you add a new course, add its data structure here
+        const courseDataMap = {
+          'gis-fundamentals': {
+            en: enCourseData,
+            ar: arCourseData
+          },
+          'gis-data-structures': {
+            en: gisDataStructuresEnCourseData,
+            ar: gisDataStructuresArCourseData
+          },
+          // Add more courses here as they become available:
+          // 'advanced-gis': {
+          //   en: advancedGisEnCourseData,
+          //   ar: advancedGisArCourseData
+          // },
+        };
         
         // --- I18N SETUP ---
 
@@ -836,17 +2092,53 @@
           return context;
         };
 
-        const useTranslation = () => {
+        const useTranslation = (courseId = 'gis-fundamentals') => {
           const { language } = useLanguage();
 
           const t = (key) => {
             return language === 'ar' ? arTranslations[key] : enTranslations[key];
           };
 
-          const courseData = language === 'ar' ? arCourseData : enCourseData;
+          // Get course-specific data if available, otherwise fallback to gis-fundamentals
+          const courseDataEntry = courseDataMap[courseId] || courseDataMap['gis-fundamentals'];
+          const courseData = language === 'ar' ? courseDataEntry.ar : courseDataEntry.en;
           const glossaryData = language === 'ar' ? arGlossaryData : enGlossaryData;
 
-          return { t, language, courseData, glossaryData };
+          return { t, language, courseData, glossaryData, courseId };
+        };
+
+        // --- THEME SETUP ---
+
+        const ThemeContext = createContext(undefined);
+
+        const ThemeProvider = ({ children }) => {
+          const [theme, setTheme] = useState(() => {
+            const saved = localStorage.getItem('theme');
+            return saved || 'dark';
+          });
+
+          useEffect(() => {
+            document.body.className = `${theme}-theme`;
+            localStorage.setItem('theme', theme);
+          }, [theme]);
+
+          const toggleTheme = () => {
+            setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+          };
+
+          return (
+            <ThemeContext.Provider value={{ theme, toggleTheme }}>
+              {children}
+            </ThemeContext.Provider>
+          );
+        };
+
+        const useTheme = () => {
+          const context = useContext(ThemeContext);
+          if (context === undefined) {
+            throw new Error('useTheme must be used within a ThemeProvider');
+          }
+          return context;
         };
 
         // --- ICONS ---
@@ -956,17 +2248,63 @@
             </svg>
         );
 
+        const SunIcon = ({className}) => (
+          <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        );
+
+        const MoonIcon = ({className}) => (
+          <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        );
+
+        const SettingsIcon = ({className}) => (
+          <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        );
 
         // --- COMPONENTS ---
 
+        // Helper function for theme-aware classes
+        const themeClasses = (theme) => ({
+          bg: {
+            main: theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50',
+            secondary: theme === 'dark' ? 'bg-gray-800' : 'bg-white',
+            tertiary: theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100',
+            card: theme === 'dark' ? 'bg-gray-800/50' : 'bg-white/80',
+            hover: theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100',
+          },
+          text: {
+            primary: theme === 'dark' ? 'text-white' : 'text-gray-900',
+            secondary: theme === 'dark' ? 'text-gray-300' : 'text-gray-700',
+            tertiary: theme === 'dark' ? 'text-gray-400' : 'text-gray-600',
+            muted: theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
+          },
+          border: {
+            default: theme === 'dark' ? 'border-gray-700' : 'border-gray-300',
+            light: theme === 'dark' ? 'border-gray-600' : 'border-gray-200',
+          },
+          input: theme === 'dark' 
+            ? 'bg-gray-700/50 border-gray-600 text-white placeholder-gray-400'
+            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500',
+        });
+
         const LanguageSwitcher = ({ className }) => {
             const { language, setLanguage } = useLanguage();
+            const { theme } = useTheme();
+            const tc = themeClasses(theme);
             const commonClasses = 'px-4 py-2 font-bold rounded-md transition-colors';
             const activeClasses = 'bg-cyan-500 text-white';
-            const inactiveClasses = 'bg-gray-700 text-gray-300 hover:bg-gray-600';
+            const inactiveClasses = theme === 'dark' 
+              ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300';
 
             return (
-                <div className={`flex items-center gap-2 p-1 bg-gray-800 rounded-lg ${className}`}>
+                <div className={`flex items-center gap-2 p-1 ${tc.bg.secondary} rounded-lg ${className}`}>
                     <button onClick={() => setLanguage('en')} className={`${commonClasses} ${language === 'en' ? activeClasses : inactiveClasses}`}>
                         EN
                     </button>
@@ -977,38 +2315,445 @@
             );
         };
 
+        const ThemeSwitcher = ({ className }) => {
+          const { theme, toggleTheme } = useTheme();
+          
+          return (
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-all duration-300 ${theme === 'dark' 
+                ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' 
+                : 'bg-gray-200 text-yellow-600 hover:bg-gray-300'} ${className}`}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? (
+                <SunIcon className="w-5 h-5" />
+              ) : (
+                <MoonIcon className="w-5 h-5" />
+              )}
+            </button>
+          );
+        };
+
+        const SettingsPanel = ({ isOpen, onClose }) => {
+          const { theme } = useTheme();
+          const [fontSize, setFontSize] = useState(() => {
+            return parseInt(localStorage.getItem('fontSize') || '16');
+          });
+          const tc = themeClasses(theme);
+
+          useEffect(() => {
+            document.documentElement.style.fontSize = `${fontSize}px`;
+            localStorage.setItem('fontSize', fontSize);
+          }, [fontSize]);
+
+          const exportProgress = () => {
+            const progress = {
+              moduleStatuses: JSON.parse(localStorage.getItem('moduleStatuses') || '{}'),
+              quizProgress: JSON.parse(localStorage.getItem('quizProgress') || '{}'),
+              exportDate: new Date().toISOString(),
+            };
+            const dataStr = JSON.stringify(progress, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `gis-progress-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+          };
+
+          const importProgress = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = (e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                  try {
+                    const progress = JSON.parse(event.target.result);
+                    if (progress.moduleStatuses) {
+                      localStorage.setItem('moduleStatuses', JSON.stringify(progress.moduleStatuses));
+                    }
+                    if (progress.quizProgress) {
+                      localStorage.setItem('quizProgress', JSON.stringify(progress.quizProgress));
+                    }
+                    alert('Progress imported successfully! Please refresh the page.');
+                  } catch (error) {
+                    alert('Error importing progress. Please check the file format.');
+                  }
+                };
+                reader.readAsText(file);
+              }
+            };
+            input.click();
+          };
+
+          if (!isOpen) return null;
+
+          return (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+              <div 
+                className={`${tc.bg.secondary} ${tc.text.primary} rounded-2xl shadow-2xl max-w-md w-full p-6 border ${tc.border.default}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <SettingsIcon className="w-6 h-6" />
+                    Settings
+                  </h2>
+                  <button 
+                    onClick={onClose}
+                    className={`p-2 rounded-lg ${tc.bg.tertiary} ${tc.text.secondary} hover:opacity-70`}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className={`block ${tc.text.secondary} font-semibold mb-2`}>
+                      Font Size: {fontSize}px
+                    </label>
+                    <input
+                      type="range"
+                      min="12"
+                      max="24"
+                      value={fontSize}
+                      onChange={(e) => setFontSize(parseInt(e.target.value))}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs mt-1">
+                      <span className={tc.text.tertiary}>Small</span>
+                      <span className={tc.text.tertiary}>Large</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className={`${tc.text.secondary} font-semibold mb-3`}>Progress Management</h3>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={exportProgress}
+                        className={`flex-1 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors`}
+                      >
+                        Export Progress
+                      </button>
+                      <button
+                        onClick={importProgress}
+                        className={`flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors`}
+                      >
+                        Import Progress
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className={`${tc.text.secondary} font-semibold mb-2`}>Keyboard Shortcuts</h3>
+                    <div className={`${tc.bg.tertiary} p-3 rounded-lg text-sm space-y-1`}>
+                      <div className="flex justify-between">
+                        <span className={tc.text.secondary}>Search</span>
+                        <kbd className={`px-2 py-1 ${tc.bg.secondary} rounded text-xs`}>Ctrl+K</kbd>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={tc.text.secondary}>Toggle Theme</span>
+                        <kbd className={`px-2 py-1 ${tc.bg.secondary} rounded text-xs`}>Ctrl+T</kbd>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={tc.text.secondary}>Settings</span>
+                        <kbd className={`px-2 py-1 ${tc.bg.secondary} rounded text-xs`}>Ctrl+,</kbd>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
         const LandingPage = ({ onStartCourse }) => {
           const { t } = useTranslation();
+          const { theme } = useTheme();
+          const tc = themeClasses(theme);
+          
+          const availableCourses = coursesData.filter(course => course.available);
+          const upcomingCourses = coursesData.filter(course => !course.available);
+          const featuredCourse = availableCourses.find(c => c.featured) || availableCourses[0];
+          const otherAvailableCourses = availableCourses.filter(c => !c.featured || c.id !== featuredCourse?.id);
+          
+          const handleCourseClick = (courseId) => {
+            // Check if course has data available
+            if (courseDataMap[courseId]) {
+              onStartCourse(courseId);
+            } else {
+              alert('This course is not yet available. Please check back soon!');
+            }
+          };
+          
+          const CourseCard = ({ course, isFeatured = false, isUpcoming = false }) => {
+            const hasData = courseDataMap[course.id] !== undefined;
+            const bgGradient = course.gradient || 'from-cyan-500 to-emerald-600';
+            
+            return (
+              <div
+                className={`relative group cursor-pointer ${isUpcoming ? 'opacity-60' : ''}`}
+                onClick={() => hasData && !isUpcoming && handleCourseClick(course.id)}
+              >
+                {/* Main Card */}
+                <div className={`
+                  relative overflow-hidden rounded-3xl
+                  ${theme === 'dark' 
+                    ? 'bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-gray-700/50' 
+                    : 'bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/50'
+                  }
+                  ${isFeatured ? 'shadow-2xl shadow-cyan-500/10' : 'shadow-xl'}
+                  transform transition-all duration-500 ease-out
+                  ${hasData && !isUpcoming ? 'hover:scale-[1.03] hover:shadow-2xl hover:shadow-cyan-500/20 active:scale-[0.98]' : ''}
+                  ${isFeatured ? 'p-5 sm:p-6 md:p-8' : 'p-4 sm:p-5 md:p-6'}
+                `}>
+                  {/* Animated gradient overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-700`}></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    {/* Icon with floating effect */}
+                    <div className="mb-4 sm:mb-6">
+                      <div className={`
+                        inline-flex items-center justify-center
+                        ${isFeatured ? 'w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24' : 'w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20'}
+                        rounded-2xl sm:rounded-3xl bg-gradient-to-br ${bgGradient}
+                        shadow-2xl shadow-cyan-500/30
+                        transform transition-all duration-500
+                        ${hasData && !isUpcoming ? 'group-hover:scale-110 group-hover:rotate-12 group-hover:shadow-cyan-500/50 active:scale-95' : ''}
+                        ${isUpcoming ? 'opacity-50' : ''}
+                      `}>
+                        <span className={`${isFeatured ? 'text-3xl sm:text-4xl md:text-5xl' : 'text-2xl sm:text-3xl md:text-4xl'} drop-shadow-lg`}>
+                          {course.icon}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Badges */}
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+                      {course.level && (
+                        <span className={`
+                          px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold rounded-full backdrop-blur-sm
+                          ${course.level === 'Beginner' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                            course.level === 'Intermediate' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                            'bg-purple-500/20 text-purple-400 border border-purple-500/30'}
+                        `}>
+                          {course.level}
+                        </span>
+                      )}
+                      {course.category && (
+                        <span className={`px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-semibold rounded-full backdrop-blur-sm ${tc.bg.tertiary} ${tc.text.tertiary} border ${tc.border.default}`}>
+                          {course.category}
+                        </span>
+                      )}
+                      {isUpcoming && (
+                        <span className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 text-[10px] sm:text-xs font-bold rounded-full border border-amber-500/30 backdrop-blur-sm animate-pulse">
+                          {t('comingSoon')}
+                        </span>
+                      )}
+                      {isFeatured && hasData && (
+                        <span className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-400 text-[10px] sm:text-xs font-bold rounded-full border border-cyan-500/30 backdrop-blur-sm">
+                          ⭐ Featured
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Title */}
+                    <h3 className={`
+                      ${isFeatured ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl' : 'text-base sm:text-lg md:text-xl lg:text-2xl'} 
+                      font-extrabold ${tc.text.primary} mb-2 sm:mb-3
+                      transition-colors duration-300 leading-tight
+                      ${hasData && !isUpcoming ? 'group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-emerald-400' : ''}
+                    `}>
+                      {course.title}
+                    </h3>
+                    
+                    {/* Description */}
+                    <p className={`
+                      ${isFeatured ? 'text-sm sm:text-base md:text-lg' : 'text-xs sm:text-sm md:text-base'} 
+                      ${tc.text.secondary} mb-4 sm:mb-6 leading-relaxed
+                      ${isFeatured ? '' : 'line-clamp-3'}
+                    `}>
+                      {course.description}
+                    </p>
+                    
+                    {/* Duration */}
+                    {course.duration && (
+                      <div className={`flex items-center gap-2 mb-4 sm:mb-6 ${tc.text.tertiary} text-xs sm:text-sm`}>
+                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{course.duration}</span>
+                      </div>
+                    )}
+                    
+                    {/* CTA Button */}
+                    <button
+                      disabled={!hasData || isUpcoming}
+                      className={`
+                        w-full px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl
+                        transition-all duration-300 transform touch-manipulation
+                        ${hasData && !isUpcoming
+                          ? `bg-gradient-to-r ${bgGradient} text-white shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-[1.02] active:scale-[0.98]`
+                          : 'bg-gray-500/50 text-gray-400 cursor-not-allowed'
+                        }
+                      `}
+                    >
+                      {hasData && !isUpcoming ? t('startLearning') : t('comingSoon')}
+                    </button>
+                  </div>
+                  
+                  {/* Animated border glow */}
+                  <div className={`
+                    absolute inset-0 rounded-3xl
+                    bg-gradient-to-r ${bgGradient}
+                    opacity-0 group-hover:opacity-20
+                    transition-opacity duration-700
+                    blur-xl -z-10
+                  `}></div>
+                  
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
+                </div>
+              </div>
+            );
+          };
+          
           return (
-            <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-              <LanguageSwitcher className="absolute top-4 end-4" />
-              <div className="bg-black bg-opacity-50 p-8 rounded-2xl shadow-2xl backdrop-blur-sm border border-gray-700 max-w-2xl">
-                <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 mb-4">
-                  {t('gisFundamentals')}
-                </h1>
-                <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-lg mx-auto">
-                  {t('landingPageDescription')}
-                </p>
-                <button
-                  onClick={onStartCourse}
-                  className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-emerald-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-cyan-500/50 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-cyan-300"
-                >
-                  {t('startLearning')}
-                </button>
+            <div className={`min-h-screen ${tc.bg.primary} relative overflow-hidden`}>
+              {/* Background decoration */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+              </div>
+              
+              <div className="relative z-10 flex flex-col items-center p-4 sm:p-6 py-8 sm:py-12">
+                {/* Header Controls */}
+                <div className="absolute top-2 sm:top-4 end-2 sm:end-4 flex items-center gap-2 sm:gap-3 z-30">
+                  <ThemeSwitcher />
+                  <LanguageSwitcher />
+                </div>
+              
+                <div className="w-full max-w-7xl space-y-10 sm:space-y-16 mt-8 sm:mt-12">
+                  {/* Hero Section */}
+                  <div className="text-center space-y-4 sm:space-y-6 animate-fade-in px-2">
+                    <div className="inline-block w-full">
+                      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-600 mb-2 leading-tight px-2">
+                        {t('selectCourse')}
+                      </h1>
+                      <div className="h-1 sm:h-1.5 w-full bg-gradient-to-r from-cyan-500 via-emerald-500 to-cyan-500 rounded-full mt-2"></div>
+                    </div>
+                    <p className={`text-base sm:text-lg md:text-xl lg:text-2xl ${tc.text.secondary} max-w-3xl mx-auto leading-relaxed px-2`}>
+                      Explore our comprehensive GIS courses. Start learning today or get notified when new courses launch.
+                    </p>
+                  </div>
+
+                  {/* Featured Course */}
+                  {featuredCourse && (
+                    <div className="space-y-6 sm:space-y-8 animate-slide-up px-2">
+                      <div className="text-center">
+                        <div className="inline-flex items-center gap-2 sm:gap-4 px-4 sm:px-6 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 border border-cyan-500/20">
+                          <span className="text-xl sm:text-2xl">⭐</span>
+                          <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold ${tc.text.primary}`}>
+                            Featured Course
+                          </h2>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+                        <CourseCard course={featuredCourse} isFeatured={true} />
+                        <div className="flex items-center justify-center">
+                          <div className={`
+                            ${tc.bg.secondary} p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl 
+                            border ${tc.border.default} 
+                            text-start space-y-4 sm:space-y-6
+                            shadow-xl w-full
+                            ${theme === 'dark' ? 'bg-gradient-to-br from-gray-800/80 to-gray-900/80' : 'bg-gradient-to-br from-white to-gray-50'}
+                          `}>
+                            <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold ${tc.text.primary} mb-2`}>
+                              Why Start Here?
+                            </h3>
+                            <ul className={`space-y-3 sm:space-y-4 ${tc.text.secondary} text-base sm:text-lg`}>
+                              <li className="flex items-start gap-3 sm:gap-4">
+                                <span className="text-xl sm:text-2xl text-cyan-400 mt-0.5 flex-shrink-0">✓</span>
+                                <span>Perfect for beginners with no prior GIS experience</span>
+                              </li>
+                              <li className="flex items-start gap-3 sm:gap-4">
+                                <span className="text-xl sm:text-2xl text-cyan-400 mt-0.5 flex-shrink-0">✓</span>
+                                <span>Hands-on projects and interactive learning</span>
+                              </li>
+                              <li className="flex items-start gap-3 sm:gap-4">
+                                <span className="text-xl sm:text-2xl text-cyan-400 mt-0.5 flex-shrink-0">✓</span>
+                                <span>Foundation for all advanced courses</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Other Available Courses */}
+                  {otherAvailableCourses.length > 0 && (
+                    <div className="space-y-6 sm:space-y-8 animate-slide-up px-2">
+                      <div className="flex items-center gap-2 sm:gap-4">
+                        <div className="h-1 sm:h-1.5 flex-1 bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full"></div>
+                        <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold ${tc.text.primary} whitespace-nowrap px-2`}>
+                          {t('availableCourses')}
+                        </h2>
+                        <div className="h-1 sm:h-1.5 flex-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full"></div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                        {otherAvailableCourses.map((course, index) => (
+                          <div key={course.id} style={{ animationDelay: `${index * 100}ms` }} className="animate-fade-in">
+                            <CourseCard course={course} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Upcoming Courses */}
+                  {upcomingCourses.length > 0 && (
+                    <div className="space-y-6 sm:space-y-8 animate-slide-up px-2">
+                      <div className="flex items-center gap-2 sm:gap-4">
+                        <div className="h-1 sm:h-1.5 flex-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"></div>
+                        <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold ${tc.text.primary} whitespace-nowrap px-2`}>
+                          {t('comingSoonSection')}
+                        </h2>
+                        <div className="h-1 sm:h-1.5 flex-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"></div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                        {upcomingCourses.map((course, index) => (
+                          <div key={course.id} style={{ animationDelay: `${index * 100}ms` }} className="animate-fade-in">
+                            <CourseCard course={course} isUpcoming={true} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           );
         };
         
         const GlossaryTerm = ({ term, definition }) => {
+          const { theme } = useTheme();
+          const tc = themeClasses(theme);
           return (
             <span className="relative group cursor-pointer">
               <span className="text-cyan-400 border-b-2 border-cyan-400 border-dotted">
                 {term}
               </span>
-              <div className="absolute bottom-full mb-3 w-72 bg-gray-900 border border-cyan-500 text-white text-sm rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20 -translate-x-1/2 start-1/2 text-start">
+              <div className={`absolute bottom-full mb-3 w-72 ${tc.bg.secondary} border border-cyan-500 ${tc.text.primary} text-sm rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20 -translate-x-1/2 start-1/2 text-start`}>
                 <h4 className="font-bold mb-1 text-base">{term}</h4>
-                <p className="text-gray-300">{definition}</p>
+                <p className={tc.text.secondary}>{definition}</p>
                 <div className="absolute top-full start-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-cyan-500"></div>
               </div>
             </span>
@@ -1017,6 +2762,8 @@
 
         const ModuleNode = ({ module, status, onClick }) => {
           const { glossaryData, t } = useTranslation();
+          const { theme } = useTheme();
+          const tc = themeClasses(theme);
 
           const glossaryMap = useMemo(() => new Map(glossaryData.map(item => [item.term.toLowerCase(), item])), [glossaryData]);
           const termsRegex = useMemo(() => new RegExp(`\\b(${glossaryData.map(g => g.term).join('|')})\\b`, 'gi'), [glossaryData]);
@@ -1036,9 +2783,15 @@
           };
 
           const statusStyles = {
-            locked: 'bg-gray-700/50 border-gray-600 text-gray-500 cursor-not-allowed',
-            available: 'bg-gray-800 border-cyan-500 text-cyan-300 hover:bg-cyan-900/50 hover:border-cyan-300 transform hover:-translate-y-1',
-            completed: 'bg-emerald-800/50 border-emerald-500 text-emerald-300',
+            locked: theme === 'dark' 
+              ? 'bg-gray-700/50 border-gray-600 text-gray-500 cursor-not-allowed'
+              : 'bg-gray-200/50 border-gray-400 text-gray-400 cursor-not-allowed',
+            available: theme === 'dark'
+              ? 'bg-gray-800 border-cyan-500 text-cyan-300 hover:bg-cyan-900/50 hover:border-cyan-300 transform hover:-translate-y-1'
+              : 'bg-white border-cyan-500 text-cyan-600 hover:bg-cyan-50 hover:border-cyan-400 transform hover:-translate-y-1',
+            completed: theme === 'dark'
+              ? 'bg-emerald-800/50 border-emerald-500 text-emerald-300'
+              : 'bg-emerald-100 border-emerald-500 text-emerald-700',
           };
 
           const getIcon = (type) => {
@@ -1067,23 +2820,23 @@
                 {getIcon(module.type)}
                 <span className="mt-2 text-xs sm:text-sm font-semibold leading-tight">{module.title}</span>
                 {module.duration && (
-                  <div className="text-xs text-gray-400 mt-1 flex items-center">
+                  <div className={`text-xs ${tc.text.tertiary} mt-1 flex items-center`}>
                     <TimeIcon className="w-3 h-3 me-1" />
                     {module.duration}
                   </div>
                 )}
                 {status === 'completed' && (
-                  <div className="animate-checkmark absolute -top-2 -end-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white border-2 border-gray-800">
+                  <div className={`animate-checkmark absolute -top-2 -end-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white border-2 ${theme === 'dark' ? 'border-gray-800' : 'border-white'}`}>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
                     </svg>
                   </div>
                 )}
               </button>
-              <div className="absolute bottom-full mb-2 w-64 p-3 bg-gray-900 border border-cyan-500 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 start-1/2 -translate-x-1/2 text-start">
+              <div className={`absolute bottom-full mb-2 w-64 p-3 ${tc.bg.secondary} border border-cyan-500 ${tc.text.primary} text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 start-1/2 -translate-x-1/2 text-start`}>
                 <h4 className="font-bold text-base text-cyan-300">{module.title}</h4>
-                {module.duration && <p className="text-xs text-gray-500 mb-2 -mt-1">{t('estimatedTime')} {module.duration}</p>}
-                <p className="text-gray-300">{parseAndHighlightText(module.description)}</p>
+                {module.duration && <p className={`text-xs ${tc.text.muted} mb-2 -mt-1`}>{t('estimatedTime')} {module.duration}</p>}
+                <p className={tc.text.secondary}>{parseAndHighlightText(module.description)}</p>
                 <div className="absolute top-full start-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-cyan-500"></div>
               </div>
             </div>
@@ -1091,11 +2844,13 @@
         };
 
         const CourseTrack = ({ track, moduleStatuses, onModuleClick }) => {
+          const { theme } = useTheme();
+          const tc = themeClasses(theme);
           return (
-            <section className="bg-gray-800/50 p-6 rounded-2xl border border-gray-700 shadow-lg group backdrop-blur-sm">
+            <section className={`${tc.bg.card} p-6 rounded-2xl border ${tc.border.default} shadow-lg group backdrop-blur-sm`}>
               <div className="mb-6 text-start">
                 <h2 className="text-2xl sm:text-3xl font-bold text-cyan-300">{track.title}</h2>
-                <p className="text-gray-400 mt-1">{track.description}</p>
+                <p className={`${tc.text.tertiary} mt-1`}>{track.description}</p>
               </div>
               <div className="overflow-x-auto pb-4">
                 <div className="flex items-center min-w-max">
@@ -1107,7 +2862,7 @@
                         onClick={() => onModuleClick(module, moduleStatuses[module.id])}
                       />
                       {index < track.modules.length - 1 && (
-                        <div className="flex-auto h-1 bg-gray-600 group-hover:bg-cyan-500 transition-colors duration-300 w-12 sm:w-20"></div>
+                        <div className={`flex-auto h-1 ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'} group-hover:bg-cyan-500 transition-colors duration-300 w-12 sm:w-20`}></div>
                       )}
                     </Fragment>
                   ))}
@@ -1545,12 +3300,19 @@
           );
         };
         
-        const CourseDashboard = () => {
-          const { t, courseData, glossaryData, language } = useTranslation();
+        const CourseDashboard = ({ courseId = 'gis-fundamentals', onBackToCourses }) => {
+          const { t, courseData, glossaryData, language } = useTranslation(courseId);
+          const { theme, toggleTheme } = useTheme();
+          const tc = themeClasses(theme);
           const [activeModule, setActiveModule] = useState(null);
           const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
+          const [isSettingsOpen, setIsSettingsOpen] = useState(false);
           const [searchTerm, setSearchTerm] = useState('');
           const [quizProgress, setQuizProgress] = useState({});
+          const searchInputRef = useRef(null);
+          
+          // Get the current course info
+          const currentCourse = coursesData.find(c => c.id === courseId) || coursesData[0];
 
           const initialStatuses = useMemo(() => {
             const statuses = {};
@@ -1568,6 +3330,26 @@
             setModuleStatuses(initialStatuses);
             setQuizProgress({});
           }, [language, initialStatuses]);
+
+          // Keyboard shortcuts
+          useEffect(() => {
+            const handleKeyDown = (e) => {
+              if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInputRef.current?.focus();
+              }
+              if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+                e.preventDefault();
+                toggleTheme();
+              }
+              if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+                e.preventDefault();
+                setIsSettingsOpen(true);
+              }
+            };
+            window.addEventListener('keydown', handleKeyDown);
+            return () => window.removeEventListener('keydown', handleKeyDown);
+          }, [toggleTheme]);
 
           const filteredCourseData = useMemo(() => {
             if (!searchTerm.trim()) return courseData;
@@ -1628,26 +3410,63 @@
           return (
             <div className="container mx-auto p-4 sm:p-8">
               <header className="text-center mb-12 relative">
-                <div className="absolute top-0 start-0"><LanguageSwitcher /></div>
-                <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500">{t('courseDashboard')}</h1>
-                <p className="text-gray-400 mt-2">{t('courseProgressDescription')}</p>
-                <button onClick={() => setIsGlossaryOpen(true)} className="absolute top-0 end-0 mt-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-700 border border-gray-600 text-cyan-300 font-semibold rounded-lg transition-colors flex items-center gap-2">
+                <div className="absolute top-0 start-0 flex items-center gap-2">
+                  {onBackToCourses && (
+                    <button
+                      onClick={onBackToCourses}
+                      className={`px-4 py-2 ${tc.bg.tertiary} ${tc.text.secondary} hover:opacity-70 border ${tc.border.default} font-semibold rounded-lg transition-colors flex items-center gap-2`}
+                      title="Back to Courses"
+                    >
+                      ← {t('backToDashboard')}
+                    </button>
+                  )}
+                  <ThemeSwitcher />
+                  <LanguageSwitcher />
+                </div>
+                <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500">
+                  {currentCourse.title}
+                </h1>
+                <p className={`${tc.text.tertiary} mt-2`}>{t('courseProgressDescription')}</p>
+                <div className="absolute top-0 end-0 flex items-center gap-2">
+                  <button 
+                    onClick={() => setIsSettingsOpen(true)} 
+                    className={`px-3 py-2 ${tc.bg.tertiary} ${tc.text.secondary} hover:opacity-70 border ${tc.border.default} font-semibold rounded-lg transition-colors`}
+                    title="Settings (Ctrl+,)"
+                  >
+                    <SettingsIcon className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => setIsGlossaryOpen(true)} 
+                    className={`px-4 py-2 ${tc.bg.tertiary} hover:opacity-70 border ${tc.border.default} text-cyan-300 font-semibold rounded-lg transition-colors flex items-center gap-2`}
+                  >
                     <GlossaryIcon className="w-5 h-5" />
                     <span className="hidden sm:inline">{t('glossary')}</span>
-                </button>
+                  </button>
+                </div>
                 <div className="mt-8 max-w-lg mx-auto">
-                  <input type="text" placeholder={t('searchPlaceholder')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full px-4 py-3 bg-gray-700/50 border-2 border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all text-white placeholder-gray-400" />
+                  <input 
+                    ref={searchInputRef}
+                    type="text" 
+                    placeholder={t('searchPlaceholder')} 
+                    value={searchTerm} 
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                    className={`w-full px-4 py-3 ${tc.input} border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all`}
+                  />
                 </div>
               </header>
               <div className="space-y-12">
                 {filteredCourseData.length > 0 ? (
                   filteredCourseData.map(track => <CourseTrack key={track.id} track={track} moduleStatuses={moduleStatuses} onModuleClick={handleModuleClick} />)
                 ) : (
-                  <div className="text-center py-16"><h3 className="text-2xl font-bold text-gray-300">{t('noModulesFound')}</h3><p className="text-gray-400 mt-2">{t('adjustSearch')}</p></div>
+                  <div className="text-center py-16">
+                    <h3 className={`text-2xl font-bold ${tc.text.secondary}`}>{t('noModulesFound')}</h3>
+                    <p className={`${tc.text.tertiary} mt-2`}>{t('adjustSearch')}</p>
+                  </div>
                 )}
               </div>
               {activeModule && <ModuleModal module={activeModule} status={moduleStatuses[activeModule.id]} onClose={handleCloseModal} onComplete={handleCompleteModule} nextModule={nextModule} onGoToNext={handleGoToNext} quizProgress={quizProgress[activeModule.id]} onUpdateQuizProgress={handleUpdateQuizProgress} />}
               {isGlossaryOpen && <GlossaryModal glossary={glossaryData} onClose={() => setIsGlossaryOpen(false)} />}
+              <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
             </div>
           );
         };
@@ -1656,21 +3475,36 @@
 
         const App = () => {
           const [courseStarted, setCourseStarted] = useState(false);
-          const handleStartCourse = () => setCourseStarted(true);
+          const [selectedCourseId, setSelectedCourseId] = useState('gis-fundamentals');
+          const { theme } = useTheme();
+          const tc = themeClasses(theme);
+          
+          const handleStartCourse = (courseId = 'gis-fundamentals') => {
+            setSelectedCourseId(courseId);
+            setCourseStarted(true);
+          };
+
+          const handleBackToCourses = () => {
+            setCourseStarted(false);
+          };
 
           return (
-            <main className="bg-gray-900 text-white min-h-screen antialiased">
+            <main className={`${tc.bg.main} ${tc.text.primary} min-h-screen antialiased transition-colors duration-300`}>
               <video 
                 autoPlay 
                 loop 
                 muted 
                 playsInline
-                className="absolute top-0 left-0 w-full h-full object-cover opacity-10 z-0"
+                className={`absolute top-0 left-0 w-full h-full object-cover ${theme === 'dark' ? 'opacity-10' : 'opacity-5'} z-0`}
               >
                 <source src="https://static.videezy.com/system/resources/previews/000/044/479/original/P1200022.mp4" type="video/mp4" />
               </video>
               <div className="relative z-10">
-                {courseStarted ? <CourseDashboard /> : <LandingPage onStartCourse={handleStartCourse} />}
+                {courseStarted ? (
+                  <CourseDashboard courseId={selectedCourseId} onBackToCourses={handleBackToCourses} />
+                ) : (
+                  <LandingPage onStartCourse={handleStartCourse} />
+                )}
               </div>
             </main>
           );
@@ -1686,9 +3520,11 @@
         const root = ReactDOM.createRoot(rootElement);
         root.render(
           <React.StrictMode>
-            <LanguageProvider>
-              <App />
-            </LanguageProvider>
+            <ThemeProvider>
+              <LanguageProvider>
+                <App />
+              </LanguageProvider>
+            </ThemeProvider>
           </React.StrictMode>
         );
       })();
